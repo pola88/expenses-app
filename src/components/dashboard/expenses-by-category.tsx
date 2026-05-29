@@ -73,7 +73,7 @@ export function ExpensesByCategory() {
                 ))}
               </Pie>
               <Tooltip
-                formatter={(value: number) => [formatMoney(value, currency), '']}
+                formatter={(value) => [formatMoney(Number(value ?? 0), currency), '']}
                 labelFormatter={() => ''}
                 contentStyle={{
                   borderRadius: '8px',
