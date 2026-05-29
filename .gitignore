@@ -1,0 +1,11 @@
+# Env
+.env
+.env.local
+.env.*.local
+
+# Build
+node_modules/
+.next/
+
+# Claude Code session memory
+.claude/
