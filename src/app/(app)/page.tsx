@@ -17,7 +17,7 @@ export default async function DashboardPage() {
   const monthLabel = now.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' })
 
   return (
-    <div className="p-4 md:p-6 flex flex-col gap-6 max-w-2xl">
+    <div className="p-4 md:p-6 flex flex-col gap-6 max-w-2xl mx-auto w-full">
       <section>
         <h1 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
           Balance

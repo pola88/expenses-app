@@ -48,7 +48,7 @@ export default function IngresosPage() {
   const sorted = [...filtered].sort((a, b) => b.date.localeCompare(a.date))
 
   return (
-    <div className="p-4 md:p-6 flex flex-col gap-4 max-w-2xl">
+    <div className="p-4 md:p-6 flex flex-col gap-4 max-w-2xl mx-auto w-full">
       <h1 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
         Ingresos
       </h1>

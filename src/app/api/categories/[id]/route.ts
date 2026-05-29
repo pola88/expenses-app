@@ -1,5 +1,6 @@
 import { apiHandler, ok, err } from '@/lib/api'
 import { categoryRepository } from '@/repositories/category.repository'
+import { Prisma } from '@prisma/client'
 import { z } from 'zod'
 
 const updateCategorySchema = z.object({
@@ -22,6 +23,13 @@ export const DELETE = (req: Request, { params }: Params) =>
     const { id } = await params
     const existing = await categoryRepository.findById(id, householdId)
     if (!existing) return err('Categoría no encontrada', 404)
-    await categoryRepository.delete(id, householdId)
+    try {
+      await categoryRepository.delete(id, householdId)
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2003') {
+        return err('La categoría tiene gastos asociados y no puede eliminarse', 409)
+      }
+      throw e
+    }
     return ok({ deleted: true })
   })(req)

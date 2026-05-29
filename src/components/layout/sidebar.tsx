@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, List, Wallet, ArrowLeftRight, Tag, Users, Settings, Plus } from 'lucide-react'
+import { Home, List, Wallet, ArrowLeftRight, Settings, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { WalletBadge } from '@/components/wallet/wallet-badge'
 import { Button } from '@/components/ui/button'
@@ -15,9 +15,7 @@ const NAV_MAIN = [
 ]
 
 const NAV_SYSTEM = [
-  { href: '/configuracion/categorias', label: 'Categorías',    icon: Tag },
-  { href: '/configuracion/household',  label: 'Household',     icon: Users },
-  { href: '/configuracion',            label: 'Configuración', icon: Settings },
+  { href: '/configuracion', label: 'Configuración', icon: Settings },
 ]
 
 type Props = {
