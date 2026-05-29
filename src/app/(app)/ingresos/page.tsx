@@ -40,9 +40,9 @@ export default function IngresosPage() {
     return { ARS: sum('ARS'), USD: sum('USD') }
   }, [filtered])
 
-  const btnClass = (active: boolean) =>
-    `rounded-lg border px-3 py-1.5 text-sm transition-colors ${
-      active ? 'border-foreground bg-muted font-medium' : 'border-border text-muted-foreground'
+  const chip = (active: boolean) =>
+    `rounded-full px-3 py-1 text-sm font-medium transition-colors ${
+      active ? 'bg-foreground text-background' : 'text-muted-foreground hover:text-foreground'
     }`
 
   const sorted = [...filtered].sort((a, b) => b.date.localeCompare(a.date))
@@ -64,9 +64,9 @@ export default function IngresosPage() {
         </div>
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex gap-1">
         {(['todos', 'variable', 'recurrente'] as Filter[]).map((f) => (
-          <button key={f} type="button" onClick={() => setFilter(f)} className={btnClass(filter === f)}>
+          <button key={f} type="button" onClick={() => setFilter(f)} className={chip(filter === f)}>
             {f.charAt(0).toUpperCase() + f.slice(1)}
           </button>
         ))}

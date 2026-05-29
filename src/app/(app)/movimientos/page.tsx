@@ -61,9 +61,9 @@ export default function MovimientosPage() {
     return all.sort((a, b) => b.date.localeCompare(a.date))
   }, [expenses, incomes, exchanges, type, currency])
 
-  const btnClass = (active: boolean) =>
-    `rounded-lg border px-3 py-1.5 text-sm transition-colors ${
-      active ? 'border-foreground bg-muted font-medium' : 'border-border text-muted-foreground'
+  const chip = (active: boolean) =>
+    `rounded-full px-3 py-1 text-sm font-medium transition-colors ${
+      active ? 'bg-foreground text-background' : 'text-muted-foreground hover:text-foreground'
     }`
 
   return (
@@ -72,15 +72,17 @@ export default function MovimientosPage() {
         Movimientos
       </h1>
 
-      <div className="flex flex-wrap gap-2">
-        {(['todos', 'gasto', 'ingreso', 'cambio'] as FilterType[]).map((t) => (
-          <button key={t} type="button" onClick={() => setType(t)} className={btnClass(type === t)}>
-            {t.charAt(0).toUpperCase() + t.slice(1)}
-          </button>
-        ))}
-        <div className="ml-auto flex gap-2">
+      <div className="flex flex-col gap-1.5">
+        <div className="flex gap-1">
+          {(['todos', 'gasto', 'ingreso', 'cambio'] as FilterType[]).map((t) => (
+            <button key={t} type="button" onClick={() => setType(t)} className={chip(type === t)}>
+              {t.charAt(0).toUpperCase() + t.slice(1)}
+            </button>
+          ))}
+        </div>
+        <div className="flex gap-1">
           {(['todas', 'ARS', 'USD'] as FilterCurrency[]).map((c) => (
-            <button key={c} type="button" onClick={() => setCurrency(c)} className={btnClass(currency === c)}>
+            <button key={c} type="button" onClick={() => setCurrency(c)} className={chip(currency === c)}>
               {c === 'todas' ? 'Todas' : `${c}$`}
             </button>
           ))}
