@@ -30,7 +30,7 @@ export function ExchangeForm({ onSuccess }: { onSuccess: () => void }) {
     formState: { errors },
   } = useForm<CreateExchangeInput>({
     resolver: zodResolver(createExchangeSchema),
-    defaultValues: { fromCurrency: 'ARS', toCurrency: 'USD', date: new Date() },
+    defaultValues: { fromCurrency: 'ARS', toCurrency: 'USD', date: new Date().toISOString().split('T')[0] as unknown as Date },
   })
 
   const [fromCurrency, toCurrency, fromAmount, toAmount] = watch([
@@ -132,6 +132,11 @@ export function ExchangeForm({ onSuccess }: { onSuccess: () => void }) {
         {errors.exchangeRate && (
           <p className="text-xs text-destructive">{errors.exchangeRate.message}</p>
         )}
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <Label>Fecha</Label>
+        <Input {...register('date')} type="date" />
       </div>
 
       {errors.root && <p className="text-xs text-destructive">{errors.root.message}</p>}

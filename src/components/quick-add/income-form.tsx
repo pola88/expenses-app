@@ -20,7 +20,7 @@ export function IncomeForm({ onSuccess }: { onSuccess: () => void }) {
     formState: { errors },
   } = useForm<CreateIncomeInput>({
     resolver: zodResolver(createIncomeSchema),
-    defaultValues: { currency: 'ARS', isRecurring: false, date: new Date() },
+    defaultValues: { currency: 'ARS', isRecurring: false, date: new Date().toISOString().split('T')[0] as unknown as Date },
   })
 
   const isRecurring = watch('isRecurring')
@@ -104,6 +104,11 @@ export function IncomeForm({ onSuccess }: { onSuccess: () => void }) {
           )}
         </div>
       )}
+
+      <div className="flex flex-col gap-1">
+        <Label>Fecha</Label>
+        <Input {...register('date')} type="date" />
+      </div>
 
       <Button type="submit" disabled={mutation.isPending} className="mt-1 w-full">
         {mutation.isPending ? 'Guardando...' : 'Guardar ingreso'}

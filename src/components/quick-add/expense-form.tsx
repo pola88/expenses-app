@@ -20,7 +20,7 @@ export function ExpenseForm({ onSuccess }: { onSuccess: () => void }) {
   const { register, handleSubmit, setValue, watch, formState: { errors } } =
     useForm<CreateExpenseInput>({
       resolver: zodResolver(createExpenseSchema),
-      defaultValues: { currency: 'ARS', date: new Date() },
+      defaultValues: { currency: 'ARS', date: new Date().toISOString().split('T')[0] as unknown as Date },
     })
 
   const mutation = useMutation({
@@ -67,6 +67,11 @@ export function ExpenseForm({ onSuccess }: { onSuccess: () => void }) {
       <div className="flex flex-col gap-1">
         <Label>Descripción <span className="text-muted-foreground">(opcional)</span></Label>
         <Input {...register('description')} placeholder="ej: Disco, Coto..." />
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <Label>Fecha</Label>
+        <Input {...register('date')} type="date" />
       </div>
 
       <Button type="submit" disabled={mutation.isPending} className="mt-1 w-full">
