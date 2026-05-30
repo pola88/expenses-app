@@ -10,7 +10,7 @@ import { IncomeForm } from './income-form'
 import { ExchangeForm } from './exchange-form'
 import { toast } from 'sonner'
 
-type Props = { open: boolean; onOpenChange: (v: boolean) => void; householdId: string }
+type Props = { open: boolean; onOpenChange: (v: boolean) => void }
 
 function QuickAddTabs({ onSuccess }: { onSuccess: (label: string) => void }) {
   const [tab, setTab] = useState<'gasto' | 'ingreso' | 'cambio'>('gasto')
@@ -35,13 +35,14 @@ function QuickAddTabs({ onSuccess }: { onSuccess: (label: string) => void }) {
   )
 }
 
-export function QuickAddSheet({ open, onOpenChange, householdId }: Props) {
+export function QuickAddSheet({ open, onOpenChange }: Props) {
   const qc = useQueryClient()
-  const [isDesktop, setIsDesktop] = useState(false)
+  const [isDesktop, setIsDesktop] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches
+  )
 
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 768px)')
-    setIsDesktop(mq.matches)
     const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches)
     mq.addEventListener('change', handler)
     return () => mq.removeEventListener('change', handler)

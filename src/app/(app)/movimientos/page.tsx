@@ -9,9 +9,6 @@ import { Skeleton } from '@/components/ui/skeleton'
 type FilterType = 'todos' | 'gasto' | 'ingreso' | 'cambio'
 type FilterCurrency = 'todas' | 'ARS' | 'USD'
 
-function toMovementExpense(e: MovementExpense & { user: { id: string; name: string | null } }): MovementExpense {
-  return { ...e, type: 'expense' }
-}
 
 export default function MovimientosPage() {
   const [type, setType] = useState<FilterType>('todos')

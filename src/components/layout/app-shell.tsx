@@ -26,11 +26,7 @@ export function AppShell({ user, children }: Props) {
           <BottomNav onQuickAdd={() => setQuickAddOpen(true)} />
         </div>
       </main>
-      <QuickAddSheet
-        open={quickAddOpen}
-        onOpenChange={setQuickAddOpen}
-        householdId={user.householdId}
-      />
+      <QuickAddSheet open={quickAddOpen} onOpenChange={setQuickAddOpen} />
     </div>
   )
 }

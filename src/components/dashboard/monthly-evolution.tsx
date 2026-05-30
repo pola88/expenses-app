@@ -73,7 +73,7 @@ export function MonthlyEvolution() {
               width={40}
             />
             <Tooltip
-              formatter={(value: number, name: string) => [fmt(value), name]}
+              formatter={(value, name) => [fmt(Number(value ?? 0)), String(name)]}
               contentStyle={{
                 borderRadius: '8px',
                 border: '1px solid hsl(var(--border))',
