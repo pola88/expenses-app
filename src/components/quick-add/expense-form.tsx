@@ -11,7 +11,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 type Category = { id: string; name: string; icon: string; color: string }
 
-export function ExpenseForm({ onSuccess }: { onSuccess: () => void }) {
+type InitialValues = {
+  amount: string
+  currency: 'ARS' | 'USD'
+  description: string
+  date: string
+  categoryId: string
+}
+
+type Props = {
+  onSuccess: () => void
+  editId?: string
+  initialValues?: InitialValues
+}
+
+export function ExpenseForm({ onSuccess, editId, initialValues }: Props) {
   const { data: categories = [] } = useQuery<Category[]>({
     queryKey: ['categories'],
     queryFn: () => fetch('/api/categories').then((r) => r.json()),
@@ -20,13 +34,21 @@ export function ExpenseForm({ onSuccess }: { onSuccess: () => void }) {
   const { register, handleSubmit, setValue, watch, formState: { errors } } =
     useForm<CreateExpenseInput>({
       resolver: zodResolver(createExpenseSchema),
-      defaultValues: { currency: 'ARS', date: new Date().toISOString().split('T')[0] as unknown as Date },
+      defaultValues: initialValues
+        ? {
+            amount: initialValues.amount,
+            currency: initialValues.currency,
+            description: initialValues.description,
+            date: initialValues.date as unknown as Date,
+            categoryId: initialValues.categoryId,
+          }
+        : { currency: 'ARS', date: new Date().toISOString().split('T')[0] as unknown as Date },
     })
 
   const mutation = useMutation({
     mutationFn: (data: CreateExpenseInput) =>
-      fetch('/api/expenses', {
-        method: 'POST',
+      fetch(editId ? `/api/expenses/${editId}` : '/api/expenses', {
+        method: editId ? 'PATCH' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       }).then((r) => r.json()),
@@ -39,7 +61,7 @@ export function ExpenseForm({ onSuccess }: { onSuccess: () => void }) {
         <Label>Monto</Label>
         <div className="flex gap-2">
           <Input {...register('amount')} type="number" step="0.01" placeholder="0,00" className="flex-1" />
-          <Select defaultValue="ARS" onValueChange={(v) => setValue('currency', v as 'ARS' | 'USD')}>
+          <Select defaultValue={initialValues?.currency ?? 'ARS'} onValueChange={(v) => setValue('currency', v as 'ARS' | 'USD')}>
             <SelectTrigger className="w-20"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="ARS">ARS$</SelectItem>
@@ -75,7 +97,7 @@ export function ExpenseForm({ onSuccess }: { onSuccess: () => void }) {
       </div>
 
       <Button type="submit" disabled={mutation.isPending} className="mt-1 w-full">
-        {mutation.isPending ? 'Guardando...' : 'Guardar gasto'}
+        {mutation.isPending ? 'Guardando...' : editId ? 'Guardar cambios' : 'Guardar gasto'}
       </Button>
     </form>
   )

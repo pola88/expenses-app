@@ -95,19 +95,24 @@ model Category {
 }
 
 model Income {
-  id           String   @id @default(cuid())
-  amount       Decimal  @db.Decimal(18, 2)
-  currency     Currency
-  description  String
-  date         DateTime
-  isRecurring  Boolean  @default(false)
-  recurringDay Int?
-  createdAt    DateTime @default(now())
+  id                String   @id @default(cuid())
+  amount            Decimal  @db.Decimal(18, 2)
+  currency          Currency
+  description       String
+  date              DateTime
+  isRecurring       Boolean  @default(false)
+  recurringDay      Int?
+  recurringActive   Boolean  @default(true)
+  recurringSourceId String?
+  createdAt         DateTime @default(now())
 
   householdId String
   household   Household @relation(fields: [householdId], references: [id])
   userId      String
   user        User      @relation(fields: [userId], references: [id])
+
+  recurringSource    Income?  @relation("RecurringInstances", fields: [recurringSourceId], references: [id], onDelete: SetNull)
+  recurringInstances Income[] @relation("RecurringInstances")
 }
 
 model Expense {

@@ -3,7 +3,6 @@ import { getWalletSummary, getRecentMovements } from '@/services/wallet.service'
 import { WalletCard } from '@/components/dashboard/wallet-card'
 import { MonthSummary } from '@/components/dashboard/month-summary'
 import { MovementList } from '@/components/dashboard/movement-list'
-import { PendingRecurring } from '@/components/dashboard/pending-recurring'
 import { ExpensesByCategory } from '@/components/dashboard/expenses-by-category'
 import { MonthlyEvolution } from '@/components/dashboard/monthly-evolution'
 
@@ -44,8 +43,6 @@ export default async function DashboardPage() {
           <MonthlyEvolution />
         </div>
       </section>
-
-      <PendingRecurring />
 
       <section>
         <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">

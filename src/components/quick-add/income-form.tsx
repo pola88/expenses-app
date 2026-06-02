@@ -11,7 +11,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 const DAYS = Array.from({ length: 31 }, (_, i) => i + 1)
 
-export function IncomeForm({ onSuccess }: { onSuccess: () => void }) {
+type InitialValues = {
+  amount: string
+  currency: 'ARS' | 'USD'
+  description: string
+  date: string
+  isRecurring: boolean
+  recurringDay?: number
+}
+
+type Props = {
+  onSuccess: () => void
+  editId?: string
+  initialValues?: InitialValues
+}
+
+export function IncomeForm({ onSuccess, editId, initialValues }: Props) {
   const {
     register,
     handleSubmit,
@@ -20,15 +35,24 @@ export function IncomeForm({ onSuccess }: { onSuccess: () => void }) {
     formState: { errors },
   } = useForm<CreateIncomeInput>({
     resolver: zodResolver(createIncomeSchema),
-    defaultValues: { currency: 'ARS', isRecurring: false, date: new Date().toISOString().split('T')[0] as unknown as Date },
+    defaultValues: initialValues
+      ? {
+          amount: initialValues.amount,
+          currency: initialValues.currency,
+          description: initialValues.description,
+          date: initialValues.date as unknown as Date,
+          isRecurring: initialValues.isRecurring,
+          recurringDay: initialValues.recurringDay,
+        }
+      : { currency: 'ARS', isRecurring: false, date: new Date().toISOString().split('T')[0] as unknown as Date },
   })
 
   const isRecurring = watch('isRecurring')
 
   const mutation = useMutation({
     mutationFn: (data: CreateIncomeInput) =>
-      fetch('/api/incomes', {
-        method: 'POST',
+      fetch(editId ? `/api/incomes/${editId}` : '/api/incomes', {
+        method: editId ? 'PATCH' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       }).then((r) => r.json()),
@@ -47,7 +71,7 @@ export function IncomeForm({ onSuccess }: { onSuccess: () => void }) {
             placeholder="0,00"
             className="flex-1"
           />
-          <Select defaultValue="ARS" onValueChange={(v) => setValue('currency', v as 'ARS' | 'USD')}>
+          <Select defaultValue={initialValues?.currency ?? 'ARS'} onValueChange={(v) => setValue('currency', v as 'ARS' | 'USD')}>
             <SelectTrigger className="w-20"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="ARS">ARS$</SelectItem>
@@ -89,7 +113,10 @@ export function IncomeForm({ onSuccess }: { onSuccess: () => void }) {
       {isRecurring && (
         <div className="flex flex-col gap-1">
           <Label>Día del mes</Label>
-          <Select onValueChange={(v) => setValue('recurringDay', parseInt(v))}>
+          <Select
+            defaultValue={initialValues?.recurringDay ? String(initialValues.recurringDay) : undefined}
+            onValueChange={(v) => setValue('recurringDay', parseInt(v))}
+          >
             <SelectTrigger><SelectValue placeholder="Elegí el día" /></SelectTrigger>
             <SelectContent>
               {DAYS.map((d) => (
@@ -111,7 +138,7 @@ export function IncomeForm({ onSuccess }: { onSuccess: () => void }) {
       </div>
 
       <Button type="submit" disabled={mutation.isPending} className="mt-1 w-full">
-        {mutation.isPending ? 'Guardando...' : 'Guardar ingreso'}
+        {mutation.isPending ? 'Guardando...' : editId ? 'Guardar cambios' : 'Guardar ingreso'}
       </Button>
     </form>
   )

@@ -2,6 +2,7 @@ import Decimal from 'decimal.js'
 import { incomeRepository } from '@/repositories/income.repository'
 import { expenseRepository } from '@/repositories/expense.repository'
 import { exchangeRepository } from '@/repositories/exchange.repository'
+import { incomeService } from '@/services/income.service'
 import type { Movement } from '@/types/movement'
 
 export type WalletBalance = { ARS: string; USD: string }
@@ -17,6 +18,8 @@ export type WalletSummary = {
 export type { Movement }
 
 export async function getWalletBalance(householdId: string): Promise<WalletBalance> {
+  await incomeService.syncRecurringIncomes(householdId)
+
   const [incomes, expenses, exchanges] = await Promise.all([
     incomeRepository.findByHousehold(householdId),
     expenseRepository.findByHousehold(householdId),
@@ -87,7 +90,7 @@ export async function getRecentMovements(householdId: string, limit = 10): Promi
       amount: e.amount.toString(),
       currency: e.currency,
       description: e.description,
-      category: { name: e.category.name, icon: e.category.icon, color: e.category.color },
+      category: { id: e.category.id, name: e.category.name, icon: e.category.icon, color: e.category.color },
       user: e.user,
     })),
     ...incomes.map((i) => ({
@@ -98,6 +101,7 @@ export async function getRecentMovements(householdId: string, limit = 10): Promi
       currency: i.currency,
       description: i.description,
       isRecurring: i.isRecurring,
+      recurringSourceId: i.recurringSourceId,
       user: i.user,
     })),
     ...exchanges.map((ex) => ({

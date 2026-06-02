@@ -1,5 +1,6 @@
 import type { Movement } from '@/types/movement'
 import { formatMoney, formatRate } from '@/lib/money'
+import { MovementActions } from './movement-actions'
 
 function Initials({ name }: { name: string | null }) {
   const letters = (name ?? '?')
@@ -30,7 +31,7 @@ function formatDate(iso: string) {
 export function MovementItem({ movement }: { movement: Movement }) {
   if (movement.type === 'expense') {
     return (
-      <div className="flex items-center gap-3 py-3">
+      <div className="group flex items-center gap-3 py-3">
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-lg">
           {movement.category.icon}
         </span>
@@ -47,13 +48,14 @@ export function MovementItem({ movement }: { movement: Movement }) {
           </span>
           <CurrencyBadge currency={movement.currency} />
         </div>
+        <MovementActions movement={movement} />
       </div>
     )
   }
 
   if (movement.type === 'income') {
     return (
-      <div className="flex items-center gap-3 py-3">
+      <div className="group flex items-center gap-3 py-3">
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-green-50 text-lg">
           ↑
         </span>
@@ -73,13 +75,14 @@ export function MovementItem({ movement }: { movement: Movement }) {
           </span>
           <CurrencyBadge currency={movement.currency} />
         </div>
+        <MovementActions movement={movement} />
       </div>
     )
   }
 
-  // exchange
+  // exchange — solo eliminar
   return (
-    <div className="flex items-center gap-3 py-3">
+    <div className="group flex items-center gap-3 py-3">
       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-lg">
         ⇄
       </span>
@@ -94,6 +97,7 @@ export function MovementItem({ movement }: { movement: Movement }) {
           </span>
         </div>
       </div>
+      <MovementActions movement={movement} />
     </div>
   )
 }
