@@ -132,14 +132,16 @@ model Expense {
 }
 
 model CurrencyExchange {
-  id           String   @id @default(cuid())
-  fromCurrency Currency
-  toCurrency   Currency
-  fromAmount   Decimal  @db.Decimal(18, 2)
-  toAmount     Decimal  @db.Decimal(18, 2)
-  exchangeRate Decimal  @db.Decimal(10, 4)
-  date         DateTime
-  createdAt    DateTime @default(now())
+  id            String   @id @default(cuid())
+  fromCurrency  Currency
+  toCurrency    Currency
+  fromAmount    Decimal  @db.Decimal(18, 2)
+  toAmount      Decimal  @db.Decimal(18, 2)
+  exchangeRate  Decimal  @db.Decimal(10, 4)
+  commissionType  String   @default("pct")
+  commissionValue Decimal  @default(0) @db.Decimal(18, 4)
+  date          DateTime
+  createdAt     DateTime @default(now())
 
   householdId String
   household   Household        @relation(fields: [householdId], references: [id])

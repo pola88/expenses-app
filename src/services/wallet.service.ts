@@ -113,6 +113,8 @@ export async function getRecentMovements(householdId: string, limit = 10): Promi
       fromAmount: ex.fromAmount.toString(),
       toAmount: ex.toAmount.toString(),
       exchangeRate: ex.exchangeRate.toString(),
+      commissionType: ex.commissionType,
+      commissionValue: ex.commissionValue.toString(),
       user: ex.user,
     })),
   ]

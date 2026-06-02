@@ -41,6 +41,8 @@ export type MovementExchange = {
   fromAmount: string
   toAmount: string
   exchangeRate: string
+  commissionType: string
+  commissionValue: string
   user: { id: string; name: string | null }
 }
 

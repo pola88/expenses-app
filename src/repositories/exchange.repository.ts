@@ -24,7 +24,9 @@ export const exchangeRepository = {
 
   create(data: {
     fromCurrency: Currency; toCurrency: Currency; fromAmount: string
-    toAmount: string; exchangeRate: string; date: Date; householdId: string; userId: string
+    toAmount: string; exchangeRate: string
+    commissionType: string; commissionValue: string
+    date: Date; householdId: string; userId: string
   }) {
     return prisma.currencyExchange.create({ data })
   },

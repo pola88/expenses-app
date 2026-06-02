@@ -81,6 +81,12 @@ export function MovementItem({ movement }: { movement: Movement }) {
   }
 
   // exchange — solo eliminar
+  const hasCommission = parseFloat(movement.commissionValue) > 0
+  const commissionLabel = hasCommission
+    ? movement.commissionType === 'pct'
+      ? ` · comisión ${formatRate(movement.commissionValue)}%`
+      : ` · comisión ${formatMoney(movement.commissionValue, movement.toCurrency)}`
+    : null
   return (
     <div className="group flex items-center gap-3 py-3">
       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-lg">
@@ -88,12 +94,13 @@ export function MovementItem({ movement }: { movement: Movement }) {
       </span>
       <div className="flex flex-1 flex-col min-w-0">
         <span className="text-sm font-medium">
-          {formatMoney(movement.fromAmount, movement.fromCurrency)} → {movement.toCurrency}$
+          {formatMoney(movement.fromAmount, movement.fromCurrency)} → {formatMoney(movement.toAmount, movement.toCurrency)}
         </span>
         <div className="flex items-center gap-1.5 mt-0.5">
           <Initials name={movement.user.name} />
           <span className="text-xs text-muted-foreground">
             {formatDate(movement.date)} · $1 = {formatRate(movement.exchangeRate)}
+            {commissionLabel}
           </span>
         </div>
       </div>
