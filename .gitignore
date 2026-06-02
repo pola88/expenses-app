@@ -9,3 +9,5 @@ node_modules/
 
 # Claude Code session memory
 .claude/
+
+*.tsbuildinfo
