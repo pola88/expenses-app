@@ -25,7 +25,7 @@ function CurrencyBadge({ currency }: { currency: 'ARS' | 'USD' }) {
 }
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('es-AR', { day: 'numeric', month: 'short' })
+  return new Date(iso).toLocaleDateString('es-AR', { day: 'numeric', month: 'short', timeZone: 'UTC' })
 }
 
 export function MovementItem({ movement }: { movement: Movement }) {

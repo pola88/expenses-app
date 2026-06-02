@@ -61,7 +61,7 @@ export const incomeService = {
         amount: template.amount.toString(),
         currency: template.currency,
         description: template.description,
-        date: new Date(year, month, day),
+        date: new Date(Date.UTC(year, month, day)),
         isRecurring: false,
         householdId,
         userId: template.userId,

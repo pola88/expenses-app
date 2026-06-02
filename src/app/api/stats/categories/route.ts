@@ -4,11 +4,11 @@ import Decimal from 'decimal.js'
 
 export const GET = apiHandler(async (_, { householdId }) => {
   const now = new Date()
-  const from = new Date(now.getFullYear(), now.getMonth(), 1)
-  const to = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999)
+  const from = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1))
+  const to = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1))
 
   const expenses = await prisma.expense.findMany({
-    where: { householdId, date: { gte: from, lte: to } },
+    where: { householdId, date: { gte: from, lt: to } },
     select: {
       amount: true,
       currency: true,
