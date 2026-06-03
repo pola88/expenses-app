@@ -1,0 +1,187 @@
+{
+  "common": {
+    "save": "Save",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "ars": "ARS$",
+    "usd": "USD$",
+    "optional": "(optional)",
+    "all": "All",
+    "actions": "Actions"
+  },
+  "nav": {
+    "home": "Home",
+    "movements": "Movements",
+    "incomes": "Income",
+    "exchanges": "Exchanges",
+    "settings": "Settings",
+    "expenses": "Expenses",
+    "config": "Config",
+    "addMovement": "Add movement",
+    "actions": "Actions",
+    "principal": "Main",
+    "system": "System",
+    "add": "Add"
+  },
+  "auth": {
+    "login": {
+      "title": "Sign in",
+      "subtitle": "Log in to your account",
+      "email": "Email",
+      "emailPlaceholder": "you@example.com",
+      "password": "Password",
+      "passwordPlaceholder": "••••••••",
+      "invalidCredentials": "Invalid email or password",
+      "submitting": "Signing in...",
+      "submit": "Sign in",
+      "noAccount": "Don't have an account?",
+      "register": "Sign up"
+    },
+    "register": {
+      "title": "Create account",
+      "subtitle": "Start tracking your expenses",
+      "name": "Name",
+      "namePlaceholder": "Your name",
+      "email": "Email",
+      "emailPlaceholder": "you@example.com",
+      "password": "Password",
+      "passwordPlaceholder": "••••••••",
+      "household": "Household",
+      "createNew": "Create new",
+      "joinExisting": "Join existing",
+      "householdNamePlaceholder": "Household name (e.g. Home, Family...)",
+      "householdIdPlaceholder": "Household ID",
+      "sessionError": "Account created, but auto sign-in failed. Please sign in manually.",
+      "submitting": "Creating account...",
+      "submit": "Create account",
+      "hasAccount": "Already have an account?",
+      "login": "Sign in"
+    }
+  },
+  "dashboard": {
+    "balance": "Balance",
+    "analysis": "Analysis",
+    "lastMovements": "Recent movements",
+    "noMovements": "No movements yet.",
+    "noMovementsCta": "Add the first one with the + button",
+    "monthSummary": {
+      "incomes": "Income ↑",
+      "expenses": "Expenses ↓"
+    },
+    "byCategory": {
+      "title": "By category",
+      "empty": "No expenses this month"
+    },
+    "monthlyEvolution": {
+      "title": "Monthly evolution"
+    },
+    "movement": {
+      "recurring": "recurring",
+      "editExpense": "Edit expense",
+      "editIncome": "Edit income",
+      "deleteConfirmTitle": "Delete movement?",
+      "deleteConfirmDesc": "This action cannot be undone.",
+      "deleted": "Movement deleted",
+      "updated": "Movement updated"
+    },
+    "recurringTemplate": {
+      "day": "Day {day}",
+      "active": "Active",
+      "stopped": "Stopped",
+      "editLabel": "Edit",
+      "stopLabel": "Stop",
+      "resumeLabel": "Resume",
+      "stopConfirmTitle": "Stop recurring?",
+      "stopConfirmDesc": "No more entries will be generated for \"{description}\". Already generated entries are kept.",
+      "stoppedToast": "Recurring stopped",
+      "resumedToast": "Recurring resumed"
+    },
+    "pendingRecurring": {
+      "title": "Monthly income",
+      "registered": "{description} registered",
+      "error": "Could not register income"
+    }
+  },
+  "wallet": {
+    "title": "Wallet"
+  },
+  "movements": {
+    "title": "Movements",
+    "all": "All",
+    "expense": "Expense",
+    "income": "Income",
+    "exchange": "Exchange",
+    "allCurrencies": "All"
+  },
+  "incomes": {
+    "title": "Income",
+    "recurringConfigured": "Configured recurring",
+    "all": "All",
+    "variable": "Variable",
+    "recurring": "Recurring",
+    "empty": "No income recorded.",
+    "emptyCta": "Add the first one with the + button",
+    "editRecurring": "Edit recurring",
+    "recurringUpdated": "Recurring updated"
+  },
+  "exchanges": {
+    "title": "Currency exchanges",
+    "empty": "No exchanges recorded.",
+    "emptyCta": "Add the first one with the + button"
+  },
+  "quickAdd": {
+    "title": "Add movement",
+    "expenseTab": "Expense",
+    "incomeTab": "Income",
+    "exchangeTab": "Exchange",
+    "expenseSaved": "Expense saved",
+    "incomeSaved": "Income saved",
+    "exchangeSaved": "Exchange saved",
+    "expense": {
+      "amount": "Amount",
+      "amountPlaceholder": "0.00",
+      "category": "Category",
+      "description": "Description",
+      "descriptionPlaceholder": "e.g. Groceries, Restaurant...",
+      "date": "Date",
+      "saveButton": "Save expense",
+      "saveChanges": "Save changes"
+    },
+    "income": {
+      "amount": "Amount",
+      "amountPlaceholder": "0.00",
+      "description": "Description",
+      "descriptionPlaceholder": "e.g. Salary, freelance...",
+      "type": "Type",
+      "variable": "Variable",
+      "recurring": "Recurring",
+      "recurringDay": "Day of month",
+      "recurringDayPlaceholder": "Pick a day",
+      "recurringDayOption": "Day {day}",
+      "date": "Date",
+      "saveButton": "Save income",
+      "saveChanges": "Save changes"
+    },
+    "exchange": {
+      "from": "From",
+      "invert": "⇄ invert",
+      "exchangeRate": "Exchange rate",
+      "exchangeRateLabel": "1 USD = ? ARS",
+      "exchangeRatePlaceholder": "e.g. 1200",
+      "commission": "Commission",
+      "commissionPercent": "%",
+      "commissionFixed": "$",
+      "receives": "You receive —",
+      "subtotal": "Subtotal",
+      "commissionPercentLabel": "{percentage}% commission",
+      "commissionFixedLabel": "Fixed commission",
+      "commissionAmount": "− {amount}",
+      "receivesTotal": "You receive",
+      "date": "Date",
+      "saveButton": "Save exchange"
+    }
+  }
+}

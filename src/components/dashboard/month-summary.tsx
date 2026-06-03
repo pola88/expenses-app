@@ -1,6 +1,7 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
+import { useTranslations } from 'next-intl'
 import type { WalletSummary } from '@/services/wallet.service'
 
 const fmt = (val: string) =>
@@ -11,6 +12,7 @@ const fmt = (val: string) =>
 type Props = { householdId: string; initialData: WalletSummary }
 
 export function MonthSummary({ householdId, initialData }: Props) {
+  const t = useTranslations('dashboard.monthSummary')
   const { data } = useQuery<WalletSummary>({
     queryKey: ['wallet', householdId],
     queryFn: () => fetch('/api/wallet').then((r) => r.json()),
@@ -23,7 +25,7 @@ export function MonthSummary({ householdId, initialData }: Props) {
   return (
     <div className="grid grid-cols-2 gap-3">
       <div className="rounded-xl border bg-background p-4">
-        <p className="text-xs font-medium text-muted-foreground mb-2">Ingresos ↑</p>
+        <p className="text-xs font-medium text-muted-foreground mb-2">{t('incomes')}</p>
         <div className="flex flex-col gap-1">
           <div className="flex items-center justify-between">
             <span className="rounded px-1.5 py-0.5 text-[10px] font-medium bg-blue-50 text-blue-800">USD$</span>
@@ -37,7 +39,7 @@ export function MonthSummary({ householdId, initialData }: Props) {
       </div>
 
       <div className="rounded-xl border bg-background p-4">
-        <p className="text-xs font-medium text-muted-foreground mb-2">Gastos ↓</p>
+        <p className="text-xs font-medium text-muted-foreground mb-2">{t('expenses')}</p>
         <div className="flex flex-col gap-1">
           <div className="flex items-center justify-between">
             <span className="rounded px-1.5 py-0.5 text-[10px] font-medium bg-blue-50 text-blue-800">USD$</span>

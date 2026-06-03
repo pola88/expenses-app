@@ -1,3 +1,6 @@
+'use client'
+
+import { useTranslations } from 'next-intl'
 import type { Movement } from '@/types/movement'
 import { formatMoney, formatRate } from '@/lib/money'
 import { MovementActions } from './movement-actions'
@@ -29,6 +32,8 @@ function formatDate(iso: string) {
 }
 
 export function MovementItem({ movement }: { movement: Movement }) {
+  const t = useTranslations('dashboard.movement')
+
   if (movement.type === 'expense') {
     return (
       <div className="group flex items-center gap-3 py-3">
@@ -65,7 +70,7 @@ export function MovementItem({ movement }: { movement: Movement }) {
             <Initials name={movement.user.name} />
             <span className="text-xs text-muted-foreground">{formatDate(movement.date)}</span>
             {movement.isRecurring && (
-              <span className="text-[10px] text-muted-foreground border rounded px-1 py-0.5">recurrente</span>
+              <span className="text-[10px] text-muted-foreground border rounded px-1 py-0.5">{t('recurring')}</span>
             )}
           </div>
         </div>
@@ -80,12 +85,11 @@ export function MovementItem({ movement }: { movement: Movement }) {
     )
   }
 
-  // exchange — solo eliminar
   const hasCommission = parseFloat(movement.commissionValue) > 0
   const commissionLabel = hasCommission
     ? movement.commissionType === 'pct'
-      ? ` · comisión ${formatRate(movement.commissionValue)}%`
-      : ` · comisión ${formatMoney(movement.commissionValue, movement.toCurrency)}`
+      ? ` · ${formatRate(movement.commissionValue)}%`
+      : ` · ${formatMoney(movement.commissionValue, movement.toCurrency)}`
     : null
   return (
     <div className="group flex items-center gap-3 py-3">

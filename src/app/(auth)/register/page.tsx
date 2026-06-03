@@ -6,6 +6,7 @@ import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { registerSchema, RegisterInput } from '@/dtos/auth.dto'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -14,6 +15,7 @@ import { Label } from '@/components/ui/label'
 type HouseholdMode = 'create' | 'join'
 
 export default function RegisterPage() {
+  const t = useTranslations('auth.register')
   const router = useRouter()
   const [mode, setMode] = useState<HouseholdMode>('create')
   const [serverError, setServerError] = useState<string | null>(null)
@@ -43,7 +45,7 @@ export default function RegisterPage() {
 
     if (!res.ok) {
       const body = await res.json()
-      setServerError(body.error ?? 'Error al registrarse')
+      setServerError(body.error ?? 'Error')
       return
     }
 
@@ -54,7 +56,7 @@ export default function RegisterPage() {
     })
 
     if (result?.error) {
-      setServerError('Cuenta creada, pero no se pudo iniciar sesión automáticamente. Ingresá manualmente.')
+      setServerError(t('sessionError'))
       router.push('/login')
       return
     }
@@ -65,22 +67,22 @@ export default function RegisterPage() {
 
   return (
     <div className="rounded-2xl border bg-background p-6 shadow-sm">
-      <h1 className="text-xl font-semibold mb-1">Crear cuenta</h1>
-      <p className="text-sm text-muted-foreground mb-6">Empezá a registrar tus gastos</p>
+      <h1 className="text-xl font-semibold mb-1">{t('title')}</h1>
+      <p className="text-sm text-muted-foreground mb-6">{t('subtitle')}</p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="name">Nombre</Label>
-          <Input id="name" placeholder="Tu nombre" autoComplete="name" {...register('name')} />
+          <Label htmlFor="name">{t('name')}</Label>
+          <Input id="name" placeholder={t('namePlaceholder')} autoComplete="name" {...register('name')} />
           {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">{t('email')}</Label>
           <Input
             id="email"
             type="email"
-            placeholder="vos@ejemplo.com"
+            placeholder={t('emailPlaceholder')}
             autoComplete="email"
             {...register('email')}
           />
@@ -88,11 +90,11 @@ export default function RegisterPage() {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="password">Contraseña</Label>
+          <Label htmlFor="password">{t('password')}</Label>
           <Input
             id="password"
             type="password"
-            placeholder="••••••••"
+            placeholder={t('passwordPlaceholder')}
             autoComplete="new-password"
             {...register('password')}
           />
@@ -100,7 +102,7 @@ export default function RegisterPage() {
         </div>
 
         <div className="flex flex-col gap-2 pt-1">
-          <Label>Household</Label>
+          <Label>{t('household')}</Label>
           <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
@@ -111,7 +113,7 @@ export default function RegisterPage() {
                   : 'border-border text-muted-foreground'
               }`}
             >
-              Crear nuevo
+              {t('createNew')}
             </button>
             <button
               type="button"
@@ -122,14 +124,14 @@ export default function RegisterPage() {
                   : 'border-border text-muted-foreground'
               }`}
             >
-              Unirme a uno
+              {t('joinExisting')}
             </button>
           </div>
 
           {mode === 'create' && (
             <div className="flex flex-col gap-1.5">
               <Input
-                placeholder="Nombre del household (ej: Casa, Familia...)"
+                placeholder={t('householdNamePlaceholder')}
                 {...register('householdName')}
               />
               {errors.householdName && (
@@ -140,7 +142,7 @@ export default function RegisterPage() {
 
           {mode === 'join' && (
             <div className="flex flex-col gap-1.5">
-              <Input placeholder="ID del household" {...register('householdId')} />
+              <Input placeholder={t('householdIdPlaceholder')} {...register('householdId')} />
               {errors.householdId && (
                 <p className="text-xs text-destructive">{errors.householdId.message}</p>
               )}
@@ -155,14 +157,14 @@ export default function RegisterPage() {
         )}
 
         <Button type="submit" disabled={isSubmitting} className="w-full mt-1">
-          {isSubmitting ? 'Creando cuenta...' : 'Crear cuenta'}
+          {isSubmitting ? t('submitting') : t('submit')}
         </Button>
       </form>
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
-        ¿Ya tenés cuenta?{' '}
+        {t('hasAccount')}{' '}
         <Link href="/login" className="font-medium text-foreground underline-offset-4 hover:underline">
-          Iniciá sesión
+          {t('login')}
         </Link>
       </p>
     </div>

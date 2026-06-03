@@ -2,6 +2,7 @@
 
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState, useMemo, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import Decimal from 'decimal.js'
 import type { MovementIncome, IncomeTemplate } from '@/types/movement'
@@ -12,7 +13,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 
-type Filter = 'todos' | 'variable' | 'recurrente'
+type Filter = 'all' | 'variable' | 'recurring'
 
 const fmt = (val: string) =>
   new Intl.NumberFormat('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(
@@ -20,8 +21,9 @@ const fmt = (val: string) =>
   )
 
 export default function IngresosPage() {
+  const t = useTranslations('incomes')
   const qc = useQueryClient()
-  const [filter, setFilter] = useState<Filter>('todos')
+  const [filter, setFilter] = useState<Filter>('all')
   const [editTemplate, setEditTemplate] = useState<IncomeTemplate | null>(null)
   const [isDesktop, setIsDesktop] = useState(
     () => typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches
@@ -51,7 +53,7 @@ export default function IngresosPage() {
 
   const filtered = useMemo(() => {
     if (filter === 'variable') return incomes.filter((i) => !i.recurringSourceId)
-    if (filter === 'recurrente') return incomes.filter((i) => !!i.recurringSourceId)
+    if (filter === 'recurring') return incomes.filter((i) => !!i.recurringSourceId)
     return incomes
   }, [incomes, filter])
 
@@ -76,7 +78,7 @@ export default function IngresosPage() {
     qc.invalidateQueries({ queryKey: ['incomes', 'templates'] })
     qc.invalidateQueries({ queryKey: ['incomes'] })
     qc.invalidateQueries({ queryKey: ['wallet'] })
-    toast.success('Recurrente actualizado')
+    toast.success(t('recurringUpdated'))
   }
 
   const editForm = editTemplate ? (
@@ -94,10 +96,16 @@ export default function IngresosPage() {
     />
   ) : null
 
+  const filterOptions: { value: Filter; label: string }[] = [
+    { value: 'all', label: t('all') },
+    { value: 'variable', label: t('variable') },
+    { value: 'recurring', label: t('recurring') },
+  ]
+
   return (
     <div className="p-4 md:p-6 flex flex-col gap-4 max-w-2xl mx-auto w-full">
       <h1 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-        Ingresos
+        {t('title')}
       </h1>
 
       <div className="grid grid-cols-2 gap-3">
@@ -111,24 +119,23 @@ export default function IngresosPage() {
         </div>
       </div>
 
-      {/* Templates section */}
       {!loadingTemplates && templates.length > 0 && (
         <div className="flex flex-col gap-1">
           <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-            Recurrentes configurados
+            {t('recurringConfigured')}
           </h2>
           <div className="rounded-xl border bg-background divide-y divide-border px-4">
-            {templates.map((t) => (
-              <RecurringTemplateItem key={t.id} template={t} onEdit={setEditTemplate} />
+            {templates.map((tmpl) => (
+              <RecurringTemplateItem key={tmpl.id} template={tmpl} onEdit={setEditTemplate} />
             ))}
           </div>
         </div>
       )}
 
       <div className="flex gap-1">
-        {(['todos', 'variable', 'recurrente'] as Filter[]).map((f) => (
-          <button key={f} type="button" onClick={() => setFilter(f)} className={chip(filter === f)}>
-            {f.charAt(0).toUpperCase() + f.slice(1)}
+        {filterOptions.map(({ value, label }) => (
+          <button key={value} type="button" onClick={() => setFilter(value)} className={chip(filter === value)}>
+            {label}
           </button>
         ))}
       </div>
@@ -141,8 +148,8 @@ export default function IngresosPage() {
         </div>
       ) : sorted.length === 0 ? (
         <div className="rounded-xl border bg-background py-12 text-center">
-          <p className="text-sm text-muted-foreground">No hay ingresos registrados.</p>
-          <p className="text-xs text-muted-foreground mt-1">Agregá el primero con el botón +</p>
+          <p className="text-sm text-muted-foreground">{t('empty')}</p>
+          <p className="text-xs text-muted-foreground mt-1">{t('emptyCta')}</p>
         </div>
       ) : (
         <div className="rounded-xl border bg-background divide-y divide-border px-4">
@@ -152,12 +159,11 @@ export default function IngresosPage() {
         </div>
       )}
 
-      {/* Edit template sheet/dialog */}
       {isDesktop ? (
         <Dialog open={!!editTemplate} onOpenChange={(v) => !v && setEditTemplate(null)}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Editar recurrente</DialogTitle>
+              <DialogTitle>{t('editRecurring')}</DialogTitle>
             </DialogHeader>
             {editForm}
           </DialogContent>
@@ -167,7 +173,7 @@ export default function IngresosPage() {
           <SheetContent side="bottom" className="rounded-t-2xl px-4 pb-8 pt-4">
             <SheetHeader className="mb-4">
               <div className="mx-auto mb-3 h-1 w-9 rounded-full bg-muted" />
-              <SheetTitle>Editar recurrente</SheetTitle>
+              <SheetTitle>{t('editRecurring')}</SheetTitle>
             </SheetHeader>
             {editForm}
           </SheetContent>

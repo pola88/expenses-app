@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server'
 import { requireHousehold } from '@/lib/session'
 import { getWalletSummary, getRecentMovements } from '@/services/wallet.service'
 import { WalletCard } from '@/components/dashboard/wallet-card'
@@ -9,6 +10,7 @@ import { MonthlyEvolution } from '@/components/dashboard/monthly-evolution'
 export default async function DashboardPage() {
   const session = await requireHousehold()
   const householdId = session.user.householdId
+  const t = await getTranslations('dashboard')
 
   const [summary, movements] = await Promise.all([
     getWalletSummary(householdId, new Date()),
@@ -22,7 +24,7 @@ export default async function DashboardPage() {
     <div className="p-4 md:p-6 flex flex-col gap-6 max-w-2xl mx-auto w-full">
       <section>
         <h1 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
-          Balance
+          {t('balance')}
         </h1>
         <WalletCard householdId={householdId} initialData={summary} />
       </section>
@@ -36,7 +38,7 @@ export default async function DashboardPage() {
 
       <section>
         <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
-          Análisis
+          {t('analysis')}
         </h2>
         <div className="flex flex-col gap-4">
           <ExpensesByCategory />
@@ -46,7 +48,7 @@ export default async function DashboardPage() {
 
       <section>
         <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
-          Últimos movimientos
+          {t('lastMovements')}
         </h2>
         <MovementList movements={movements} />
       </section>

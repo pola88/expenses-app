@@ -3,6 +3,7 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery, useMutation } from '@tanstack/react-query'
+import { useTranslations } from 'next-intl'
 import { createExpenseSchema, CreateExpenseInput } from '@/dtos/expense.dto'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -26,6 +27,9 @@ type Props = {
 }
 
 export function ExpenseForm({ onSuccess, editId, initialValues }: Props) {
+  const t = useTranslations('quickAdd.expense')
+  const tCommon = useTranslations('common')
+
   const { data: categories = [] } = useQuery<Category[]>({
     queryKey: ['categories'],
     queryFn: () => fetch('/api/categories').then((r) => r.json()),
@@ -58,14 +62,14 @@ export function ExpenseForm({ onSuccess, editId, initialValues }: Props) {
   return (
     <form onSubmit={handleSubmit((d) => mutation.mutate(d))} className="flex flex-col gap-3">
       <div className="flex flex-col gap-1">
-        <Label>Monto</Label>
+        <Label>{t('amount')}</Label>
         <div className="flex gap-2">
-          <Input {...register('amount')} type="number" step="0.01" placeholder="0,00" className="flex-1" />
+          <Input {...register('amount')} type="number" step="0.01" placeholder={t('amountPlaceholder')} className="flex-1" />
           <Select defaultValue={initialValues?.currency ?? 'ARS'} onValueChange={(v) => setValue('currency', v as 'ARS' | 'USD')}>
             <SelectTrigger className="w-20"><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="ARS">ARS$</SelectItem>
-              <SelectItem value="USD">USD$</SelectItem>
+              <SelectItem value="ARS">{tCommon('ars')}</SelectItem>
+              <SelectItem value="USD">{tCommon('usd')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -73,7 +77,7 @@ export function ExpenseForm({ onSuccess, editId, initialValues }: Props) {
       </div>
 
       <div className="flex flex-col gap-1">
-        <Label>Categoría</Label>
+        <Label>{t('category')}</Label>
         <div className="grid grid-cols-4 gap-1.5">
           {categories.map((cat) => (
             <button key={cat.id} type="button" onClick={() => setValue('categoryId', cat.id)}
@@ -87,17 +91,17 @@ export function ExpenseForm({ onSuccess, editId, initialValues }: Props) {
       </div>
 
       <div className="flex flex-col gap-1">
-        <Label>Descripción <span className="text-muted-foreground">(opcional)</span></Label>
-        <Input {...register('description')} placeholder="ej: Disco, Coto..." />
+        <Label>{t('description')} <span className="text-muted-foreground">{tCommon('optional')}</span></Label>
+        <Input {...register('description')} placeholder={t('descriptionPlaceholder')} />
       </div>
 
       <div className="flex flex-col gap-1">
-        <Label>Fecha</Label>
+        <Label>{t('date')}</Label>
         <Input {...register('date')} type="date" />
       </div>
 
       <Button type="submit" disabled={mutation.isPending} className="mt-1 w-full">
-        {mutation.isPending ? 'Guardando...' : editId ? 'Guardar cambios' : 'Guardar gasto'}
+        {mutation.isPending ? tCommon('saving') : editId ? t('saveChanges') : t('saveButton')}
       </Button>
     </form>
   )

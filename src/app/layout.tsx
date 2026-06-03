@@ -1,5 +1,7 @@
 import { Providers } from '@/components/providers'
 import { Inter, Geist } from 'next/font/google'
+import { NextIntlClientProvider } from 'next-intl'
+import { getLocale, getMessages } from 'next-intl/server'
 import './globals.css'
 import { cn } from "@/lib/utils";
 
@@ -7,11 +9,16 @@ const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const inter = Inter({ subsets: ['latin'] })
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const locale = await getLocale()
+  const messages = await getMessages()
+
   return (
-    <html lang="es" className={cn("font-sans", geist.variable)}>
+    <html lang={locale} className={cn("font-sans", geist.variable)}>
       <body className={inter.className}>
-        <Providers>{children}</Providers>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <Providers>{children}</Providers>
+        </NextIntlClientProvider>
       </body>
     </html>
   )

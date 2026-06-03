@@ -1,0 +1,187 @@
+{
+  "common": {
+    "save": "Guardar",
+    "saving": "Guardando...",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "confirm": "Confirmar",
+    "ars": "ARS$",
+    "usd": "USD$",
+    "optional": "(opcional)",
+    "all": "Todos",
+    "actions": "Acciones"
+  },
+  "nav": {
+    "home": "Inicio",
+    "movements": "Movimientos",
+    "incomes": "Ingresos",
+    "exchanges": "Cambios",
+    "settings": "Configuración",
+    "expenses": "Gastos",
+    "config": "Config",
+    "addMovement": "Agregar movimiento",
+    "actions": "Acciones",
+    "principal": "Principal",
+    "system": "Sistema",
+    "add": "Agregar"
+  },
+  "auth": {
+    "login": {
+      "title": "Iniciar sesión",
+      "subtitle": "Ingresá con tu cuenta",
+      "email": "Email",
+      "emailPlaceholder": "vos@ejemplo.com",
+      "password": "Contraseña",
+      "passwordPlaceholder": "••••••••",
+      "invalidCredentials": "Email o contraseña incorrectos",
+      "submitting": "Entrando...",
+      "submit": "Entrar",
+      "noAccount": "¿No tenés cuenta?",
+      "register": "Registrate"
+    },
+    "register": {
+      "title": "Crear cuenta",
+      "subtitle": "Empezá a registrar tus gastos",
+      "name": "Nombre",
+      "namePlaceholder": "Tu nombre",
+      "email": "Email",
+      "emailPlaceholder": "vos@ejemplo.com",
+      "password": "Contraseña",
+      "passwordPlaceholder": "••••••••",
+      "household": "Household",
+      "createNew": "Crear nuevo",
+      "joinExisting": "Unirme a uno",
+      "householdNamePlaceholder": "Nombre del household (ej: Casa, Familia...)",
+      "householdIdPlaceholder": "ID del household",
+      "sessionError": "Cuenta creada, pero no se pudo iniciar sesión automáticamente. Ingresá manualmente.",
+      "submitting": "Creando cuenta...",
+      "submit": "Crear cuenta",
+      "hasAccount": "¿Ya tenés cuenta?",
+      "login": "Iniciá sesión"
+    }
+  },
+  "dashboard": {
+    "balance": "Balance",
+    "analysis": "Análisis",
+    "lastMovements": "Últimos movimientos",
+    "noMovements": "Todavía no hay movimientos.",
+    "noMovementsCta": "Agregá el primero con el botón +",
+    "monthSummary": {
+      "incomes": "Ingresos ↑",
+      "expenses": "Gastos ↓"
+    },
+    "byCategory": {
+      "title": "Por categoría",
+      "empty": "Sin gastos este mes"
+    },
+    "monthlyEvolution": {
+      "title": "Evolución mensual"
+    },
+    "movement": {
+      "recurring": "recurrente",
+      "editExpense": "Editar gasto",
+      "editIncome": "Editar ingreso",
+      "deleteConfirmTitle": "¿Eliminar movimiento?",
+      "deleteConfirmDesc": "Esta acción no se puede deshacer.",
+      "deleted": "Movimiento eliminado",
+      "updated": "Movimiento actualizado"
+    },
+    "recurringTemplate": {
+      "day": "Día {day}",
+      "active": "Activo",
+      "stopped": "Detenido",
+      "editLabel": "Editar",
+      "stopLabel": "Detener",
+      "resumeLabel": "Reanudar",
+      "stopConfirmTitle": "¿Detener recurrencia?",
+      "stopConfirmDesc": "No se generarán más entradas para \"{description}\". Las instancias ya generadas se mantienen.",
+      "stoppedToast": "Recurrencia detenida",
+      "resumedToast": "Recurrencia reanudada"
+    },
+    "pendingRecurring": {
+      "title": "Ingresos del mes",
+      "registered": "{description} registrado",
+      "error": "No se pudo registrar el ingreso"
+    }
+  },
+  "wallet": {
+    "title": "Wallet"
+  },
+  "movements": {
+    "title": "Movimientos",
+    "all": "Todos",
+    "expense": "Gasto",
+    "income": "Ingreso",
+    "exchange": "Cambio",
+    "allCurrencies": "Todas"
+  },
+  "incomes": {
+    "title": "Ingresos",
+    "recurringConfigured": "Recurrentes configurados",
+    "all": "Todos",
+    "variable": "Variable",
+    "recurring": "Recurrente",
+    "empty": "No hay ingresos registrados.",
+    "emptyCta": "Agregá el primero con el botón +",
+    "editRecurring": "Editar recurrente",
+    "recurringUpdated": "Recurrente actualizado"
+  },
+  "exchanges": {
+    "title": "Cambios de moneda",
+    "empty": "No hay cambios registrados.",
+    "emptyCta": "Agregá el primero con el botón +"
+  },
+  "quickAdd": {
+    "title": "Agregar movimiento",
+    "expenseTab": "Gasto",
+    "incomeTab": "Ingreso",
+    "exchangeTab": "Cambio",
+    "expenseSaved": "Gasto guardado",
+    "incomeSaved": "Ingreso guardado",
+    "exchangeSaved": "Cambio guardado",
+    "expense": {
+      "amount": "Monto",
+      "amountPlaceholder": "0,00",
+      "category": "Categoría",
+      "description": "Descripción",
+      "descriptionPlaceholder": "ej: Disco, Coto...",
+      "date": "Fecha",
+      "saveButton": "Guardar gasto",
+      "saveChanges": "Guardar cambios"
+    },
+    "income": {
+      "amount": "Monto",
+      "amountPlaceholder": "0,00",
+      "description": "Descripción",
+      "descriptionPlaceholder": "ej: Sueldo, freelance...",
+      "type": "Tipo",
+      "variable": "Variable",
+      "recurring": "Recurrente",
+      "recurringDay": "Día del mes",
+      "recurringDayPlaceholder": "Elegí el día",
+      "recurringDayOption": "Día {day}",
+      "date": "Fecha",
+      "saveButton": "Guardar ingreso",
+      "saveChanges": "Guardar cambios"
+    },
+    "exchange": {
+      "from": "De",
+      "invert": "⇄ invertir",
+      "exchangeRate": "Tipo de cambio",
+      "exchangeRateLabel": "1 USD = ? ARS",
+      "exchangeRatePlaceholder": "ej: 1200",
+      "commission": "Comisión",
+      "commissionPercent": "%",
+      "commissionFixed": "$",
+      "receives": "Recibís —",
+      "subtotal": "Subtotal",
+      "commissionPercentLabel": "Comisión {percentage}%",
+      "commissionFixedLabel": "Comisión fija",
+      "commissionAmount": "− {amount}",
+      "receivesTotal": "Recibís",
+      "date": "Fecha",
+      "saveButton": "Guardar cambio"
+    }
+  }
+}

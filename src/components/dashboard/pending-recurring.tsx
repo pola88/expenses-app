@@ -1,6 +1,7 @@
 'use client'
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { formatMoney } from '@/lib/money'
@@ -14,6 +15,8 @@ type PendingIncome = {
 }
 
 export function PendingRecurring() {
+  const t = useTranslations('dashboard.pendingRecurring')
+  const tCommon = useTranslations('common')
   const qc = useQueryClient()
 
   const { data: pending = [] } = useQuery<PendingIncome[]>({
@@ -38,9 +41,9 @@ export function PendingRecurring() {
     onSuccess: (_, inc) => {
       qc.invalidateQueries({ queryKey: ['incomes'] })
       qc.invalidateQueries({ queryKey: ['wallet'] })
-      toast.success(`${inc.description} registrado`)
+      toast.success(t('registered', { description: inc.description }))
     },
-    onError: () => toast.error('No se pudo registrar el ingreso'),
+    onError: () => toast.error(t('error')),
   })
 
   if (pending.length === 0) return null
@@ -48,7 +51,7 @@ export function PendingRecurring() {
   return (
     <section>
       <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
-        Ingresos del mes
+        {t('title')}
       </h2>
       <div className="flex flex-col gap-2">
         {pending.map((inc) => (
@@ -73,7 +76,7 @@ export function PendingRecurring() {
               disabled={confirm.isPending}
               onClick={() => confirm.mutate(inc)}
             >
-              Confirmar
+              {tCommon('confirm')}
             </Button>
           </div>
         ))}

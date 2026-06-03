@@ -2,17 +2,18 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { useState, useMemo } from 'react'
+import { useTranslations } from 'next-intl'
 import type { Movement, MovementExpense, MovementIncome, MovementExchange } from '@/types/movement'
 import { MovementList } from '@/components/dashboard/movement-list'
 import { Skeleton } from '@/components/ui/skeleton'
 
-type FilterType = 'todos' | 'gasto' | 'ingreso' | 'cambio'
-type FilterCurrency = 'todas' | 'ARS' | 'USD'
-
+type FilterType = 'all' | 'expense' | 'income' | 'exchange'
+type FilterCurrency = 'all' | 'ARS' | 'USD'
 
 export default function MovimientosPage() {
-  const [type, setType] = useState<FilterType>('todos')
-  const [currency, setCurrency] = useState<FilterCurrency>('todas')
+  const t = useTranslations('movements')
+  const [type, setType] = useState<FilterType>('all')
+  const [currency, setCurrency] = useState<FilterCurrency>('all')
 
   const { data: expenses = [], isLoading: loadingE } = useQuery<MovementExpense[]>({
     queryKey: ['expenses'],
@@ -43,12 +44,11 @@ export default function MovimientosPage() {
   const movements = useMemo<Movement[]>(() => {
     let all: Movement[] = [...expenses, ...incomes, ...exchanges]
 
-    if (type !== 'todos') {
-      const typeMap = { gasto: 'expense', ingreso: 'income', cambio: 'exchange' } as const
-      all = all.filter((m) => m.type === typeMap[type])
+    if (type !== 'all') {
+      all = all.filter((m) => m.type === type)
     }
 
-    if (currency !== 'todas') {
+    if (currency !== 'all') {
       all = all.filter((m) => {
         if (m.type === 'exchange') return m.fromCurrency === currency || m.toCurrency === currency
         return m.currency === currency
@@ -63,24 +63,37 @@ export default function MovimientosPage() {
       active ? 'bg-foreground text-background' : 'text-muted-foreground hover:text-foreground'
     }`
 
+  const typeFilters: { value: FilterType; label: string }[] = [
+    { value: 'all', label: t('all') },
+    { value: 'expense', label: t('expense') },
+    { value: 'income', label: t('income') },
+    { value: 'exchange', label: t('exchange') },
+  ]
+
+  const currencyFilters: { value: FilterCurrency; label: string }[] = [
+    { value: 'all', label: t('allCurrencies') },
+    { value: 'ARS', label: 'ARS$' },
+    { value: 'USD', label: 'USD$' },
+  ]
+
   return (
     <div className="p-4 md:p-6 flex flex-col gap-4 max-w-2xl mx-auto w-full">
       <h1 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-        Movimientos
+        {t('title')}
       </h1>
 
       <div className="flex flex-col gap-1.5">
         <div className="flex gap-1">
-          {(['todos', 'gasto', 'ingreso', 'cambio'] as FilterType[]).map((t) => (
-            <button key={t} type="button" onClick={() => setType(t)} className={chip(type === t)}>
-              {t.charAt(0).toUpperCase() + t.slice(1)}
+          {typeFilters.map(({ value, label }) => (
+            <button key={value} type="button" onClick={() => setType(value)} className={chip(type === value)}>
+              {label}
             </button>
           ))}
         </div>
         <div className="flex gap-1">
-          {(['todas', 'ARS', 'USD'] as FilterCurrency[]).map((c) => (
-            <button key={c} type="button" onClick={() => setCurrency(c)} className={chip(currency === c)}>
-              {c === 'todas' ? 'Todas' : `${c}$`}
+          {currencyFilters.map(({ value, label }) => (
+            <button key={value} type="button" onClick={() => setCurrency(value)} className={chip(currency === value)}>
+              {label}
             </button>
           ))}
         </div>

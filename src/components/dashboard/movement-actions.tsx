@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react'
 import {
@@ -70,13 +71,9 @@ function EditContent({ movement, onSuccess }: { movement: Movement; onSuccess: (
   return null
 }
 
-const EDIT_TITLE: Record<Movement['type'], string> = {
-  expense: 'Editar gasto',
-  income: 'Editar ingreso',
-  exchange: '',
-}
-
 export function MovementActions({ movement }: Props) {
+  const t = useTranslations('dashboard.movement')
+  const tCommon = useTranslations('common')
   const qc = useQueryClient()
   const [editOpen, setEditOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
@@ -103,16 +100,17 @@ export function MovementActions({ movement }: Props) {
       fetch(`/api/${ENDPOINT[movement.type]}/${movement.id}`, { method: 'DELETE' }).then((r) => r.json()),
     onSuccess: () => {
       invalidate()
-      toast.success('Movimiento eliminado')
+      toast.success(t('deleted'))
     },
   })
 
   const handleEditSuccess = () => {
     setEditOpen(false)
     invalidate()
-    toast.success('Movimiento actualizado')
+    toast.success(t('updated'))
   }
 
+  const editTitle = movement.type === 'expense' ? t('editExpense') : t('editIncome')
   const canEdit = movement.type !== 'exchange'
 
   const editNode = canEdit ? (
@@ -120,7 +118,7 @@ export function MovementActions({ movement }: Props) {
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{EDIT_TITLE[movement.type]}</DialogTitle>
+            <DialogTitle>{editTitle}</DialogTitle>
           </DialogHeader>
           <EditContent movement={movement} onSuccess={handleEditSuccess} />
         </DialogContent>
@@ -130,7 +128,7 @@ export function MovementActions({ movement }: Props) {
         <SheetContent side="bottom" className="rounded-t-2xl px-4 pb-8 pt-4">
           <SheetHeader className="mb-4">
             <div className="mx-auto mb-3 h-1 w-9 rounded-full bg-muted" />
-            <SheetTitle>{EDIT_TITLE[movement.type]}</SheetTitle>
+            <SheetTitle>{editTitle}</SheetTitle>
           </SheetHeader>
           <EditContent movement={movement} onSuccess={handleEditSuccess} />
         </SheetContent>
@@ -145,7 +143,7 @@ export function MovementActions({ movement }: Props) {
           <button
             type="button"
             className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-opacity hover:bg-muted hover:text-foreground md:opacity-0 md:group-hover:opacity-100 focus:opacity-100"
-            aria-label="Acciones"
+            aria-label={tCommon('actions')}
           >
             <MoreHorizontal className="h-4 w-4" />
           </button>
@@ -154,7 +152,7 @@ export function MovementActions({ movement }: Props) {
           {canEdit && (
             <DropdownMenuItem onClick={() => setEditOpen(true)}>
               <Pencil className="mr-2 h-4 w-4" />
-              Editar
+              {tCommon('edit')}
             </DropdownMenuItem>
           )}
           {canEdit && <DropdownMenuSeparator />}
@@ -163,7 +161,7 @@ export function MovementActions({ movement }: Props) {
             onClick={() => setDeleteOpen(true)}
           >
             <Trash2 className="mr-2 h-4 w-4" />
-            Eliminar
+            {tCommon('delete')}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -173,18 +171,18 @@ export function MovementActions({ movement }: Props) {
       <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar movimiento?</AlertDialogTitle>
+            <AlertDialogTitle>{t('deleteConfirmTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción no se puede deshacer.
+              {t('deleteConfirmDesc')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel>{tCommon('cancel')}</AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={() => deleteMutation.mutate()}
             >
-              Eliminar
+              {tCommon('delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

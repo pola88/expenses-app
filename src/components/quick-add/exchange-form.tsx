@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
+import { useTranslations } from 'next-intl'
 import { createExchangeSchema, CreateExchangeInput } from '@/dtos/exchange.dto'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -27,6 +28,9 @@ function computeToAmount(
 }
 
 export function ExchangeForm({ onSuccess }: { onSuccess: () => void }) {
+  const t = useTranslations('quickAdd.exchange')
+  const tCommon = useTranslations('common')
+
   const {
     register,
     handleSubmit,
@@ -100,31 +104,30 @@ export function ExchangeForm({ onSuccess }: { onSuccess: () => void }) {
   return (
     <form onSubmit={handleSubmit((d) => mutation.mutate(d))} className="flex flex-col gap-3">
 
-      {/* De */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center justify-between">
-          <Label>De</Label>
+          <Label>{t('from')}</Label>
           <button
             type="button"
             onClick={handleSwap}
             className="text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
-            ⇄ invertir
+            {t('invert')}
           </button>
         </div>
         <div className="flex gap-2">
           <Select value={fromCurrency} onValueChange={(v) => handleFromCurrency(v as Currency)}>
             <SelectTrigger className="w-20"><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="USD">USD$</SelectItem>
-              <SelectItem value="ARS">ARS$</SelectItem>
+              <SelectItem value="USD">{tCommon('usd')}</SelectItem>
+              <SelectItem value="ARS">{tCommon('ars')}</SelectItem>
             </SelectContent>
           </Select>
           <Input
             {...register('fromAmount')}
             type="number"
             step="0.01"
-            placeholder="0,00"
+            placeholder="0.00"
             className="flex-1"
             onChange={(e) => {
               toAmountManual.current = false
@@ -135,14 +138,13 @@ export function ExchangeForm({ onSuccess }: { onSuccess: () => void }) {
         {errors.fromAmount && <p className="text-xs text-destructive">{errors.fromAmount.message}</p>}
       </div>
 
-      {/* Tipo de cambio */}
       <div className="flex flex-col gap-1">
-        <Label>Tipo de cambio <span className="font-normal text-muted-foreground text-xs">1 USD = ? ARS</span></Label>
+        <Label>{t('exchangeRate')} <span className="font-normal text-muted-foreground text-xs">{t('exchangeRateLabel')}</span></Label>
         <Input
           {...register('exchangeRate')}
           type="number"
           step="0.01"
-          placeholder="ej: 1200"
+          placeholder={t('exchangeRatePlaceholder')}
           onChange={(e) => {
             toAmountManual.current = false
             register('exchangeRate').onChange(e)
@@ -151,11 +153,9 @@ export function ExchangeForm({ onSuccess }: { onSuccess: () => void }) {
         {errors.exchangeRate && <p className="text-xs text-destructive">{errors.exchangeRate.message}</p>}
       </div>
 
-      {/* Comisión */}
       <div className="flex flex-col gap-1">
-        <Label>Comisión <span className="font-normal text-muted-foreground text-xs">(opcional)</span></Label>
+        <Label>{t('commission')} <span className="font-normal text-muted-foreground text-xs">{tCommon('optional')}</span></Label>
         <div className="flex gap-2">
-          {/* Toggle % / $ */}
           <Controller
             control={control}
             name="commissionType"
@@ -166,14 +166,14 @@ export function ExchangeForm({ onSuccess }: { onSuccess: () => void }) {
                   onClick={() => { field.onChange('pct'); toAmountManual.current = false }}
                   className={`px-3 py-2 text-sm transition-colors ${field.value === 'pct' ? 'bg-foreground text-background' : 'bg-background text-muted-foreground hover:text-foreground'}`}
                 >
-                  %
+                  {t('commissionPercent')}
                 </button>
                 <button
                   type="button"
                   onClick={() => { field.onChange('fixed'); toAmountManual.current = false }}
                   className={`px-3 py-2 text-sm transition-colors ${field.value === 'fixed' ? 'bg-foreground text-background' : 'bg-background text-muted-foreground hover:text-foreground'}`}
                 >
-                  $
+                  {t('commissionFixed')}
                 </button>
               </div>
             )}
@@ -199,14 +199,13 @@ export function ExchangeForm({ onSuccess }: { onSuccess: () => void }) {
         {errors.commissionValue && <p className="text-xs text-destructive">{errors.commissionValue.message}</p>}
       </div>
 
-      {/* A (toAmount) — con desglose si hay comisión */}
       <div className="flex flex-col gap-1">
-        <Label>Recibís — <span className="font-normal text-muted-foreground">{toCurrency}$</span></Label>
+        <Label>{t('receives')} <span className="font-normal text-muted-foreground">{toCurrency}$</span></Label>
         <Input
           {...register('toAmount')}
           type="number"
           step="0.01"
-          placeholder="0,00"
+          placeholder="0.00"
           onChange={(e) => {
             toAmountManual.current = true
             register('toAmount').onChange(e)
@@ -214,39 +213,37 @@ export function ExchangeForm({ onSuccess }: { onSuccess: () => void }) {
         />
         {errors.toAmount && <p className="text-xs text-destructive">{errors.toAmount.message}</p>}
 
-        {/* Desglose de comisión */}
         {gross !== null && commissionAmount !== null && (
           <div className="rounded-lg bg-muted/50 px-3 py-2 flex flex-col gap-0.5 text-xs text-muted-foreground">
             <div className="flex justify-between">
-              <span>Subtotal</span>
+              <span>{t('subtotal')}</span>
               <span>{formatMoney(gross, toCurrencyLabel)}</span>
             </div>
             <div className="flex justify-between text-destructive/80">
               <span>
                 {commissionType === 'pct'
-                  ? `Comisión ${formatRate(commission)}%`
-                  : `Comisión fija`}
+                  ? t('commissionPercentLabel', { percentage: formatRate(commission) })
+                  : t('commissionFixedLabel')}
               </span>
-              <span>− {formatMoney(commissionAmount, toCurrencyLabel)}</span>
+              <span>{t('commissionAmount', { amount: formatMoney(commissionAmount, toCurrencyLabel) })}</span>
             </div>
             <div className="flex justify-between font-medium text-foreground border-t border-border pt-0.5 mt-0.5">
-              <span>Recibís</span>
+              <span>{t('receivesTotal')}</span>
               <span>{formatMoney(gross - commissionAmount, toCurrencyLabel)}</span>
             </div>
           </div>
         )}
       </div>
 
-      {/* Fecha */}
       <div className="flex flex-col gap-1">
-        <Label>Fecha</Label>
+        <Label>{t('date')}</Label>
         <Input {...register('date')} type="date" />
       </div>
 
       {errors.root && <p className="text-xs text-destructive">{errors.root.message}</p>}
 
       <Button type="submit" disabled={mutation.isPending} className="mt-1 w-full">
-        {mutation.isPending ? 'Guardando...' : 'Guardar cambio'}
+        {mutation.isPending ? tCommon('saving') : t('saveButton')}
       </Button>
     </form>
   )

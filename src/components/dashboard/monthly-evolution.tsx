@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { useTranslations } from 'next-intl'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Legend,
@@ -25,6 +26,8 @@ const fmt = (value: number) =>
   new Intl.NumberFormat('es-AR', { notation: 'compact', maximumFractionDigits: 1 }).format(value)
 
 export function MonthlyEvolution() {
+  const t = useTranslations('dashboard.monthlyEvolution')
+  const tDash = useTranslations('dashboard.monthSummary')
   const [currency, setCurrency] = useState<Currency>('ARS')
 
   const { data = [], isLoading } = useQuery<MonthStat[]>({
@@ -32,17 +35,20 @@ export function MonthlyEvolution() {
     queryFn: () => fetch('/api/stats/monthly').then((r) => r.json()),
   })
 
+  const incomesLabel = tDash('incomes').replace(' ↑', '')
+  const expensesLabel = tDash('expenses').replace(' ↓', '')
+
   const chartData = data.map((m) => ({
     month: m.month,
-    Ingresos: currency === 'ARS' ? m.incomesARS : m.incomesUSD,
-    Gastos: currency === 'ARS' ? m.expensesARS : m.expensesUSD,
+    [incomesLabel]: currency === 'ARS' ? m.incomesARS : m.incomesUSD,
+    [expensesLabel]: currency === 'ARS' ? m.expensesARS : m.expensesUSD,
   }))
 
   return (
     <div className="rounded-xl border border-border bg-background p-4 flex flex-col gap-3">
       <div className="flex items-center justify-between">
         <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-          Evolución mensual
+          {t('title')}
         </span>
         <div className="flex gap-1">
           {(['ARS', 'USD'] as Currency[]).map((c) => (
@@ -85,8 +91,8 @@ export function MonthlyEvolution() {
               iconSize={8}
               wrapperStyle={{ fontSize: '11px', paddingTop: '8px' }}
             />
-            <Bar dataKey="Ingresos" fill="#10b981" radius={[4, 4, 0, 0]} />
-            <Bar dataKey="Gastos" fill="#f97316" radius={[4, 4, 0, 0]} />
+            <Bar dataKey={incomesLabel} fill="#10b981" radius={[4, 4, 0, 0]} />
+            <Bar dataKey={expensesLabel} fill="#f97316" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       )}

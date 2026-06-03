@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { useTranslations } from 'next-intl'
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
 import { formatMoney } from '@/lib/money'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -19,6 +20,7 @@ const chip = (active: boolean) =>
   }`
 
 export function ExpensesByCategory() {
+  const t = useTranslations('dashboard.byCategory')
   const [currency, setCurrency] = useState<Currency>('ARS')
 
   const { data = [], isLoading } = useQuery<CategoryStat[]>({
@@ -37,7 +39,7 @@ export function ExpensesByCategory() {
     <div className="rounded-xl border border-border bg-background p-4 flex flex-col gap-3">
       <div className="flex items-center justify-between">
         <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-          Por categoría
+          {t('title')}
         </span>
         <div className="flex gap-1">
           {(['ARS', 'USD'] as Currency[]).map((c) => (
@@ -52,7 +54,7 @@ export function ExpensesByCategory() {
         <Skeleton className="h-[180px] w-full rounded-lg" />
       ) : chartData.length === 0 ? (
         <div className="flex h-[180px] items-center justify-center">
-          <p className="text-sm text-muted-foreground">Sin gastos este mes</p>
+          <p className="text-sm text-muted-foreground">{t('empty')}</p>
         </div>
       ) : (
         <>

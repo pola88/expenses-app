@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { Pencil, StopCircle, PlayCircle } from 'lucide-react'
 import {
@@ -20,6 +21,8 @@ import { formatMoney } from '@/lib/money'
 type Props = { template: IncomeTemplate; onEdit: (t: IncomeTemplate) => void }
 
 export function RecurringTemplateItem({ template, onEdit }: Props) {
+  const t = useTranslations('dashboard.recurringTemplate')
+  const tCommon = useTranslations('common')
   const qc = useQueryClient()
   const [stopOpen, setStopOpen] = useState(false)
 
@@ -29,7 +32,7 @@ export function RecurringTemplateItem({ template, onEdit }: Props) {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['incomes', 'templates'] })
       qc.invalidateQueries({ queryKey: ['wallet'] })
-      toast.success('Recurrencia detenida')
+      toast.success(t('stoppedToast'))
     },
   })
 
@@ -43,7 +46,7 @@ export function RecurringTemplateItem({ template, onEdit }: Props) {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['incomes', 'templates'] })
       qc.invalidateQueries({ queryKey: ['wallet'] })
-      toast.success('Recurrencia reanudada')
+      toast.success(t('resumedToast'))
     },
   })
 
@@ -56,7 +59,7 @@ export function RecurringTemplateItem({ template, onEdit }: Props) {
         <div className="flex flex-1 flex-col min-w-0">
           <span className="text-sm font-medium truncate">{template.description}</span>
           <span className="text-xs text-muted-foreground">
-            Día {template.recurringDay} · {template.recurringActive ? 'Activo' : 'Detenido'}
+            {t('day', { day: template.recurringDay })} · {template.recurringActive ? t('active') : t('stopped')}
           </span>
         </div>
         <div className="flex flex-col items-end gap-1 shrink-0 mr-1">
@@ -76,7 +79,7 @@ export function RecurringTemplateItem({ template, onEdit }: Props) {
             type="button"
             onClick={() => onEdit(template)}
             className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-            aria-label="Editar"
+            aria-label={t('editLabel')}
           >
             <Pencil className="h-3.5 w-3.5" />
           </button>
@@ -85,7 +88,7 @@ export function RecurringTemplateItem({ template, onEdit }: Props) {
               type="button"
               onClick={() => setStopOpen(true)}
               className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-destructive transition-colors"
-              aria-label="Detener"
+              aria-label={t('stopLabel')}
             >
               <StopCircle className="h-3.5 w-3.5" />
             </button>
@@ -95,7 +98,7 @@ export function RecurringTemplateItem({ template, onEdit }: Props) {
               onClick={() => resumeMutation.mutate()}
               disabled={resumeMutation.isPending}
               className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-green-700 transition-colors"
-              aria-label="Reanudar"
+              aria-label={t('resumeLabel')}
             >
               <PlayCircle className="h-3.5 w-3.5" />
             </button>
@@ -106,18 +109,18 @@ export function RecurringTemplateItem({ template, onEdit }: Props) {
       <AlertDialog open={stopOpen} onOpenChange={setStopOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Detener recurrencia?</AlertDialogTitle>
+            <AlertDialogTitle>{t('stopConfirmTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
-              No se generarán más entradas para "{template.description}". Las instancias ya generadas se mantienen.
+              {t('stopConfirmDesc', { description: template.description })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel>{tCommon('cancel')}</AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={() => stopMutation.mutate()}
             >
-              Detener
+              {t('stopLabel')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

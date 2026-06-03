@@ -3,6 +3,7 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
+import { useTranslations } from 'next-intl'
 import { createIncomeSchema, CreateIncomeInput } from '@/dtos/income.dto'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -27,6 +28,9 @@ type Props = {
 }
 
 export function IncomeForm({ onSuccess, editId, initialValues }: Props) {
+  const t = useTranslations('quickAdd.income')
+  const tCommon = useTranslations('common')
+
   const {
     register,
     handleSubmit,
@@ -62,20 +66,20 @@ export function IncomeForm({ onSuccess, editId, initialValues }: Props) {
   return (
     <form onSubmit={handleSubmit((d) => mutation.mutate(d))} className="flex flex-col gap-3">
       <div className="flex flex-col gap-1">
-        <Label>Monto</Label>
+        <Label>{t('amount')}</Label>
         <div className="flex gap-2">
           <Input
             {...register('amount')}
             type="number"
             step="0.01"
-            placeholder="0,00"
+            placeholder={t('amountPlaceholder')}
             className="flex-1"
           />
           <Select defaultValue={initialValues?.currency ?? 'ARS'} onValueChange={(v) => setValue('currency', v as 'ARS' | 'USD')}>
             <SelectTrigger className="w-20"><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="ARS">ARS$</SelectItem>
-              <SelectItem value="USD">USD$</SelectItem>
+              <SelectItem value="ARS">{tCommon('ars')}</SelectItem>
+              <SelectItem value="USD">{tCommon('usd')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -83,13 +87,13 @@ export function IncomeForm({ onSuccess, editId, initialValues }: Props) {
       </div>
 
       <div className="flex flex-col gap-1">
-        <Label>Descripción</Label>
-        <Input {...register('description')} placeholder="ej: Sueldo, freelance..." />
+        <Label>{t('description')}</Label>
+        <Input {...register('description')} placeholder={t('descriptionPlaceholder')} />
         {errors.description && <p className="text-xs text-destructive">{errors.description.message}</p>}
       </div>
 
       <div className="flex flex-col gap-1">
-        <Label>Tipo</Label>
+        <Label>{t('type')}</Label>
         <div className="grid grid-cols-2 gap-2">
           <button
             type="button"
@@ -97,7 +101,7 @@ export function IncomeForm({ onSuccess, editId, initialValues }: Props) {
             className={`rounded-lg border px-3 py-2 text-sm transition-colors
               ${!isRecurring ? 'border-foreground bg-muted font-medium' : 'border-border text-muted-foreground'}`}
           >
-            Variable
+            {t('variable')}
           </button>
           <button
             type="button"
@@ -105,23 +109,23 @@ export function IncomeForm({ onSuccess, editId, initialValues }: Props) {
             className={`rounded-lg border px-3 py-2 text-sm transition-colors
               ${isRecurring ? 'border-foreground bg-muted font-medium' : 'border-border text-muted-foreground'}`}
           >
-            Recurrente
+            {t('recurring')}
           </button>
         </div>
       </div>
 
       {isRecurring && (
         <div className="flex flex-col gap-1">
-          <Label>Día del mes</Label>
+          <Label>{t('recurringDay')}</Label>
           <Select
             defaultValue={initialValues?.recurringDay ? String(initialValues.recurringDay) : undefined}
             onValueChange={(v) => setValue('recurringDay', parseInt(v))}
           >
-            <SelectTrigger><SelectValue placeholder="Elegí el día" /></SelectTrigger>
+            <SelectTrigger><SelectValue placeholder={t('recurringDayPlaceholder')} /></SelectTrigger>
             <SelectContent>
               {DAYS.map((d) => (
                 <SelectItem key={d} value={String(d)}>
-                  Día {d}
+                  {t('recurringDayOption', { day: d })}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -133,12 +137,12 @@ export function IncomeForm({ onSuccess, editId, initialValues }: Props) {
       )}
 
       <div className="flex flex-col gap-1">
-        <Label>Fecha</Label>
+        <Label>{t('date')}</Label>
         <Input {...register('date')} type="date" />
       </div>
 
       <Button type="submit" disabled={mutation.isPending} className="mt-1 w-full">
-        {mutation.isPending ? 'Guardando...' : editId ? 'Guardar cambios' : 'Guardar ingreso'}
+        {mutation.isPending ? tCommon('saving') : editId ? t('saveChanges') : t('saveButton')}
       </Button>
     </form>
   )

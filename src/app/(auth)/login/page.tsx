@@ -6,12 +6,14 @@ import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { loginSchema, LoginInput } from '@/dtos/auth.dto'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
 export default function LoginPage() {
+  const t = useTranslations('auth.login')
   const router = useRouter()
   const [authError, setAuthError] = useState<string | null>(null)
 
@@ -25,7 +27,7 @@ export default function LoginPage() {
     setAuthError(null)
     const result = await signIn('credentials', { ...data, redirect: false })
     if (result?.error) {
-      setAuthError('Email o contraseña incorrectos')
+      setAuthError(t('invalidCredentials'))
       return
     }
     router.push('/')
@@ -34,16 +36,16 @@ export default function LoginPage() {
 
   return (
     <div className="rounded-2xl border bg-background p-6 shadow-sm">
-      <h1 className="text-xl font-semibold mb-1">Iniciar sesión</h1>
-      <p className="text-sm text-muted-foreground mb-6">Ingresá con tu cuenta</p>
+      <h1 className="text-xl font-semibold mb-1">{t('title')}</h1>
+      <p className="text-sm text-muted-foreground mb-6">{t('subtitle')}</p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">{t('email')}</Label>
           <Input
             id="email"
             type="email"
-            placeholder="vos@ejemplo.com"
+            placeholder={t('emailPlaceholder')}
             autoComplete="email"
             {...register('email')}
           />
@@ -51,11 +53,11 @@ export default function LoginPage() {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="password">Contraseña</Label>
+          <Label htmlFor="password">{t('password')}</Label>
           <Input
             id="password"
             type="password"
-            placeholder="••••••••"
+            placeholder={t('passwordPlaceholder')}
             autoComplete="current-password"
             {...register('password')}
           />
@@ -69,14 +71,14 @@ export default function LoginPage() {
         )}
 
         <Button type="submit" disabled={isSubmitting} className="w-full mt-1">
-          {isSubmitting ? 'Entrando...' : 'Entrar'}
+          {isSubmitting ? t('submitting') : t('submit')}
         </Button>
       </form>
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
-        ¿No tenés cuenta?{' '}
+        {t('noAccount')}{' '}
         <Link href="/register" className="font-medium text-foreground underline-offset-4 hover:underline">
-          Registrate
+          {t('register')}
         </Link>
       </p>
     </div>
