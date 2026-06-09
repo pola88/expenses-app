@@ -12,6 +12,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { EmojiPicker, EmojiPickerSearch, EmojiPickerContent } from '@/components/ui/emoji-picker'
 
 type Category = { id: string; name: string; icon: string; color: string }
 
@@ -21,13 +23,6 @@ const categorySchema = z.object({
   color: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
 })
 type CategoryInput = z.infer<typeof categorySchema>
-
-const ICONS = [
-  '🛒', '🍕', '🚗', '🚌', '✈️', '🏠', '💊', '☕',
-  '🎬', '👕', '💡', '📱', '🐶', '💰', '🎓', '🏋️',
-  '🎮', '🍺', '💇', '🔧', '🎁', '🏥', '🌿', '🎵',
-  '🍔', '⚽', '📚', '🍷',
-]
 
 const COLORS = [
   '#ef4444', '#f97316', '#f59e0b', '#84cc16',
@@ -44,6 +39,7 @@ function CategoryForm({
   onSubmit: (data: CategoryInput) => void
   isPending: boolean
 }) {
+  const [pickerOpen, setPickerOpen] = useState(false)
   const { register, handleSubmit, setValue, watch, formState: { errors } } =
     useForm<CategoryInput>({
       resolver: zodResolver(categorySchema),
@@ -64,22 +60,29 @@ function CategoryForm({
 
       <div className="flex flex-col gap-1.5">
         <Label>Ícono</Label>
-        <div className="grid grid-cols-7 gap-1">
-          {ICONS.map((e) => (
+        <Popover open={pickerOpen} onOpenChange={setPickerOpen} modal={true}>
+          <PopoverTrigger asChild>
             <button
-              key={e}
               type="button"
-              onClick={() => setValue('icon', e)}
-              className={`rounded-lg p-1.5 text-xl transition-colors ${
-                icon === e
-                  ? 'bg-muted border border-foreground/20'
-                  : 'hover:bg-muted/60'
-              }`}
+              className="flex h-10 w-full items-center gap-2 rounded-md border border-input bg-background px-3 text-sm hover:bg-muted/50 transition-colors"
             >
-              {e}
+              <span className="text-xl">{icon}</span>
+              <span className="text-muted-foreground">Cambiar ícono</span>
             </button>
-          ))}
-        </div>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start" >
+            <EmojiPicker
+              className="overflow-visible h-105"
+              onEmojiSelect={({ emoji }) => {
+                setValue('icon', emoji)
+                setPickerOpen(false)
+              }}
+            >
+              <EmojiPickerSearch />
+              <EmojiPickerContent />
+            </EmojiPicker>
+          </PopoverContent>
+        </Popover>
       </div>
 
       <div className="flex flex-col gap-1.5">

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { useQueryClient } from '@tanstack/react-query'
 import { useTranslations } from 'next-intl'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
@@ -39,6 +40,7 @@ function QuickAddTabs({ onSuccess }: { onSuccess: (label: string) => void }) {
 
 export function QuickAddSheet({ open, onOpenChange }: Props) {
   const t = useTranslations('quickAdd')
+  const router = useRouter()
   const qc = useQueryClient()
   const [isDesktop, setIsDesktop] = useState(
     () => typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches
@@ -58,6 +60,7 @@ export function QuickAddSheet({ open, onOpenChange }: Props) {
     qc.invalidateQueries({ queryKey: ['expenses'] })
     qc.invalidateQueries({ queryKey: ['incomes'] })
     qc.invalidateQueries({ queryKey: ['exchanges'] })
+    router.refresh()
   }
 
   if (isDesktop) {

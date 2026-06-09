@@ -216,7 +216,7 @@ src/
 4. **Repositories** — expenses, incomes, exchanges, categories (solo Prisma queries)
 5. **Services** — expenses, incomes, exchanges, wallet (lógica + ownership validation)
 6. **DTOs** — validación Zod para todos los inputs
-7. **API Routes** — CRUD completo para expenses, incomes, exchanges, categories + GET wallet
+7. **API Routes** — CRUD completo para expenses, incomes, exchanges, categories + GET wallet + GET stats/categories + GET stats/monthly
 8. **App Shell** — layout responsive con sidebar desktop / bottom nav mobile
 9. **Sidebar** — desktop con nav + wallet badge siempre visible
 10. **Bottom Nav** — mobile pill bar con FAB central (opción C)
@@ -224,13 +224,27 @@ src/
 12. **ExpenseForm** — formulario con monto, moneda, categoría, descripción
 13. **WalletBadge** — widget del sidebar con balance en tiempo real
 14. **Providers** — TanStack Query + Sonner
-15. **Dashboard page** — WalletCard + MonthSummary + MovementList (server render + client refresh via wallet query)
+15. **Dashboard page** — WalletCard + MonthSummary + ExpensesByCategory (pie) + MonthlyEvolution (bar 6 meses) + MovementList
 16. **Auth pages** — `/login` y `/register` con RHF + Zod + NextAuth signIn; registro crea o se une a household
 17. **IncomeForm** — monto, moneda, descripción, tipo variable/recurrente con selector de día
 18. **ExchangeForm** — fromCurrency/Amount, toCurrency/Amount, exchangeRate con cálculo automático visual + botón invertir
 19. **Página /movimientos** — lista unificada con filtros por tipo (gasto/ingreso/cambio) y moneda (ARS/USD)
-20. **Página /ingresos** — lista con totales ARS/USD + filtro variable/recurrente
+20. **Página /ingresos** — lista con totales ARS/USD + filtros + gestión de templates recurrentes (editar/pausar/reanudar)
 21. **Página /cambios** — historial de cambios con rate y dirección
+22. **Configuración/categorías** — CRUD completo (ícono, color, nombre) con confirmación de borrado
+23. **Configuración/household** — ver miembros con avatar, copiar ID de invitación
+24. **i18n** — next-intl integrado con language toggle
+25. **Ingresos recurrentes** — modelo de templates + auto-sync mensual vía `syncRecurringIncomes` (llamado desde wallet query)
+
+---
+
+## Modelo de ingresos recurrentes
+
+Los ingresos recurrentes usan un modelo de **template + instancias**:
+
+- **Template**: `Income` con `isRecurring: true` y `recurringDay`. Actúa como configuración. Se puede pausar (`recurringActive: false`) o reanudar.
+- **Instancia**: `Income` con `isRecurring: false` y `recurringSourceId` apuntando al template. Es el ingreso real del mes.
+- **Auto-sync**: `incomeService.syncRecurringIncomes(householdId)` crea la instancia del mes actual si no existe. Se llama automáticamente al consultar la wallet. No requiere confirmación manual del usuario.
 
 ---
 
@@ -238,55 +252,14 @@ src/
 
 ### Prioridad media
 
-1. **Configuración/categorías** — CRUD de categorías del household
-2. **Configuración/household** — ver miembros, copiar ID para invitar
+1. **Gastos recurrentes** — el modelo solo soporta `isRecurring` en `Income`, no en `Expense`. Requiere migración de Prisma + mismo patrón template/instancia
+2. **Totales en /movimientos** — mostrar totales ARS/USD cuando el filtro está en "gasto" o "ingreso"
 
 ### Prioridad baja (V2)
 
-8. Gráficos de gastos por categoría y evolución mensual
-9. Gastos recurrentes automáticos
-10. Bot de Telegram
-11. API pública para n8n
+3. Bot de Telegram
+4. API pública para n8n
 
----
-
-## Plan del Dashboard (próximo paso)
-
-### Componentes necesarios
-
-```
-/app/(app)/page.tsx           ← Server Component, fetch inicial
-/components/dashboard/
-  wallet-card.tsx             ← ARS$ + USD$ con color coding
-  month-summary.tsx           ← Ingresos ↑ vs Gastos ↓ del mes
-  movement-list.tsx           ← Lista reutilizable (dashboard + /movimientos)
-  movement-item.tsx           ← Row: ícono categoría, desc, avatar usuario, monto+moneda
-```
-
-### Data flow del dashboard
-
-```
-page.tsx (Server)
-  └── requireHousehold()
-  └── getWalletSummary(householdId, new Date())  ← server-side, sin loading
-  └── expenseService.list(householdId, { limit: 10 })
-  └── pasa data como props a Client Components
-
-WalletCard (Client)  ← recibe balance como prop, refresca con useQuery
-MonthSummary (Client) ← recibe summary como prop
-MovementList (Client) ← recibe movements como prop, tiene filtros client-side
-```
-
-### Notas de UX del dashboard
-
-- USD$ siempre en azul (`bg-blue-50 text-blue-800`)
-- ARS$ siempre en verde (`bg-green-50 text-green-800`)
-- Cada MovementItem muestra avatar/iniciales del miembro que cargó el movimiento
-- Cambios de moneda muestran `500 USD$ → ARS$` con el rate en el subtítulo
-- Estado vacío: "Todavía no hay movimientos. Agregá el primero." + CTA al QuickAdd
-- Skeleton loading en WalletCard y lista mientras cargan
-
----
 
 ## Variables de entorno necesarias
 
