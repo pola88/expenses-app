@@ -1,14 +1,19 @@
 'use client'
 
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { useTranslations } from 'next-intl'
+import { Check, ChevronsUpDown } from 'lucide-react'
 import { createExpenseSchema, CreateExpenseInput } from '@/dtos/expense.dto'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
+import { cn } from '@/lib/utils'
 
 type Category = { id: string; name: string; icon: string; color: string }
 
@@ -29,6 +34,7 @@ type Props = {
 export function ExpenseForm({ onSuccess, editId, initialValues }: Props) {
   const t = useTranslations('quickAdd.expense')
   const tCommon = useTranslations('common')
+  const [categoryOpen, setCategoryOpen] = useState(false)
 
   const { data: categories = [] } = useQuery<Category[]>({
     queryKey: ['categories'],
@@ -78,15 +84,40 @@ export function ExpenseForm({ onSuccess, editId, initialValues }: Props) {
 
       <div className="flex flex-col gap-1">
         <Label>{t('category')}</Label>
-        <div className="grid grid-cols-4 gap-1.5">
-          {categories.map((cat) => (
-            <button key={cat.id} type="button" onClick={() => setValue('categoryId', cat.id)}
-              className={`flex flex-col items-center gap-1 rounded-lg border px-2 py-2 text-[11px] transition-colors
-                ${watch('categoryId') === cat.id ? 'border-foreground bg-muted text-foreground' : 'border-border text-muted-foreground'}`}>
-              <span className="text-lg">{cat.icon}</span>{cat.name}
-            </button>
-          ))}
-        </div>
+        <Popover open={categoryOpen} onOpenChange={setCategoryOpen}>
+          <PopoverTrigger asChild>
+            <Button variant="outline" role="combobox" aria-expanded={categoryOpen}
+              className="w-full justify-between font-normal">
+              {watch('categoryId')
+                ? (() => {
+                    const cat = categories.find((c) => c.id === watch('categoryId'))
+                    return cat ? <span>{cat.icon} {cat.name}</span> : t('selectCategory')
+                  })()
+                : t('selectCategory')}
+              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-full p-0" align="start">
+            <Command>
+              <CommandInput placeholder={t('searchCategory')} />
+              <CommandList>
+                <CommandEmpty>{t('noCategoryFound')}</CommandEmpty>
+                <CommandGroup>
+                  {categories.map((cat) => (
+                    <CommandItem key={cat.id} value={cat.name}
+                      onSelect={() => {
+                        setValue('categoryId', cat.id)
+                        setCategoryOpen(false)
+                      }}>
+                      <Check className={cn('mr-2 h-4 w-4', watch('categoryId') === cat.id ? 'opacity-100' : 'opacity-0')} />
+                      <span className="mr-2">{cat.icon}</span>{cat.name}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
         {errors.categoryId && <p className="text-xs text-destructive">{errors.categoryId.message}</p>}
       </div>
 
