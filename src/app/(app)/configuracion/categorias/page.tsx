@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Plus, Pencil, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -17,12 +18,12 @@ import { EmojiPicker, EmojiPickerSearch, EmojiPickerContent } from '@/components
 
 type Category = { id: string; name: string; icon: string; color: string }
 
-const categorySchema = z.object({
-  name: z.string().min(1, 'Requerido').max(50),
+const baseCategorySchema = z.object({
+  name: z.string().min(1).max(50),
   icon: z.string().min(1),
   color: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
 })
-type CategoryInput = z.infer<typeof categorySchema>
+type CategoryInput = z.infer<typeof baseCategorySchema>
 
 const COLORS = [
   '#ef4444', '#f97316', '#f59e0b', '#84cc16',
@@ -39,10 +40,18 @@ function CategoryForm({
   onSubmit: (data: CategoryInput) => void
   isPending: boolean
 }) {
+  const t = useTranslations('settings.categories')
   const [pickerOpen, setPickerOpen] = useState(false)
+
+  const schema = z.object({
+    name: z.string().min(1, t('nameRequired')).max(50),
+    icon: z.string().min(1),
+    color: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+  })
+
   const { register, handleSubmit, setValue, watch, formState: { errors } } =
     useForm<CategoryInput>({
-      resolver: zodResolver(categorySchema),
+      resolver: zodResolver(schema),
       defaultValues: { icon: '🛒', color: '#3b82f6', name: '', ...defaultValues },
     })
 
@@ -53,13 +62,13 @@ function CategoryForm({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
       <div className="flex flex-col gap-1.5">
-        <Label>Nombre</Label>
-        <Input {...register('name')} placeholder="ej: Supermercado" autoFocus />
+        <Label>{t('name')}</Label>
+        <Input {...register('name')} placeholder={t('namePlaceholder')} autoFocus />
         {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label>Ícono</Label>
+        <Label>{t('icon')}</Label>
         <Popover open={pickerOpen} onOpenChange={setPickerOpen} modal={true}>
           <PopoverTrigger asChild>
             <button
@@ -67,10 +76,10 @@ function CategoryForm({
               className="flex h-10 w-full items-center gap-2 rounded-md border border-input bg-background px-3 text-sm hover:bg-muted/50 transition-colors"
             >
               <span className="text-xl">{icon}</span>
-              <span className="text-muted-foreground">Cambiar ícono</span>
+              <span className="text-muted-foreground">{t('changeIcon')}</span>
             </button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start" >
+          <PopoverContent className="w-auto p-0" align="start">
             <EmojiPicker
               className="overflow-visible h-105"
               onEmojiSelect={({ emoji }) => {
@@ -86,7 +95,7 @@ function CategoryForm({
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label>Color</Label>
+        <Label>{t('color')}</Label>
         <div className="flex flex-wrap gap-2.5">
           {COLORS.map((c) => (
             <button
@@ -109,19 +118,20 @@ function CategoryForm({
         <div className="flex items-center gap-2">
           <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: color }} />
           <span className="text-sm font-medium text-foreground">
-            {name || <span className="text-muted-foreground">Vista previa</span>}
+            {name || <span className="text-muted-foreground">{t('preview')}</span>}
           </span>
         </div>
       </div>
 
       <Button type="submit" disabled={isPending} className="w-full">
-        {isPending ? 'Guardando...' : 'Guardar'}
+        {isPending ? t('saving') : t('save')}
       </Button>
     </form>
   )
 }
 
 export default function CategoriasPage() {
+  const t = useTranslations('settings.categories')
   const qc = useQueryClient()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editing, setEditing] = useState<Category | null>(null)
@@ -142,7 +152,7 @@ export default function CategoriasPage() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['categories'] })
       setDialogOpen(false)
-      toast.success('Categoría creada')
+      toast.success(t('created'))
     },
   })
 
@@ -157,7 +167,7 @@ export default function CategoriasPage() {
       qc.invalidateQueries({ queryKey: ['categories'] })
       setDialogOpen(false)
       setEditing(null)
-      toast.success('Categoría actualizada')
+      toast.success(t('updated'))
     },
   })
 
@@ -166,14 +176,14 @@ export default function CategoriasPage() {
       fetch(`/api/categories/${id}`, { method: 'DELETE' }).then(async (r) => {
         if (!r.ok) {
           const body = await r.json()
-          throw new Error(body.error ?? 'Error al eliminar')
+          throw new Error(body.error ?? t('deleteError'))
         }
         return r.json()
       }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['categories'] })
       setConfirmDeleteId(null)
-      toast.success('Categoría eliminada')
+      toast.success(t('deleted'))
     },
     onError: (e: Error) => {
       setConfirmDeleteId(null)
@@ -195,10 +205,10 @@ export default function CategoriasPage() {
     <div className="p-4 md:p-6 flex flex-col gap-4 max-w-2xl mx-auto w-full">
       <div className="flex items-center justify-between">
         <h1 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-          Categorías
+          {t('title')}
         </h1>
         <Button size="sm" onClick={openCreate} className="gap-1.5">
-          <Plus className="h-3.5 w-3.5" /> Nueva
+          <Plus className="h-3.5 w-3.5" /> {t('new')}
         </Button>
       </div>
 
@@ -211,11 +221,9 @@ export default function CategoriasPage() {
       ) : categories.length === 0 ? (
         <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-border py-14 text-center">
           <span className="text-4xl">🏷️</span>
-          <p className="text-sm text-muted-foreground">
-            Todavía no hay categorías.
-          </p>
+          <p className="text-sm text-muted-foreground">{t('empty')}</p>
           <Button size="sm" variant="outline" onClick={openCreate}>
-            Crear primera categoría
+            {t('emptyCta')}
           </Button>
         </div>
       ) : (
@@ -252,7 +260,7 @@ export default function CategoriasPage() {
                     disabled={deleteMutation.isPending}
                     className="rounded px-1.5 py-1 text-[11px] font-semibold bg-destructive text-destructive-foreground hover:bg-destructive/90 disabled:opacity-50"
                   >
-                    ¿Borrar?
+                    {t('deleteConfirm')}
                   </button>
                 ) : (
                   <button
@@ -279,7 +287,7 @@ export default function CategoriasPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {editing ? 'Editar categoría' : 'Nueva categoría'}
+              {editing ? t('editTitle') : t('newTitle')}
             </DialogTitle>
           </DialogHeader>
           <CategoryForm

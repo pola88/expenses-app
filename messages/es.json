@@ -132,6 +132,44 @@
     "empty": "No hay cambios registrados.",
     "emptyCta": "Agregá el primero con el botón +"
   },
+  "settings": {
+    "title": "Configuración",
+    "categoriesLabel": "Categorías",
+    "categoriesDescription": "Creá y editá las categorías de gastos del household",
+    "householdLabel": "Household",
+    "householdDescription": "Miembros y código de invitación",
+    "categories": {
+      "title": "Categorías",
+      "new": "Nueva",
+      "newTitle": "Nueva categoría",
+      "editTitle": "Editar categoría",
+      "name": "Nombre",
+      "namePlaceholder": "ej: Supermercado",
+      "nameRequired": "Requerido",
+      "icon": "Ícono",
+      "changeIcon": "Cambiar ícono",
+      "color": "Color",
+      "preview": "Vista previa",
+      "saving": "Guardando...",
+      "save": "Guardar",
+      "created": "Categoría creada",
+      "updated": "Categoría actualizada",
+      "deleted": "Categoría eliminada",
+      "deleteError": "Error al eliminar",
+      "deleteConfirm": "¿Borrar?",
+      "empty": "Todavía no hay categorías.",
+      "emptyCta": "Crear primera categoría"
+    },
+    "household": {
+      "title": "Household",
+      "nameLabel": "Nombre",
+      "inviteId": "ID de invitación — compartilo para que otros se unan",
+      "members": "Miembros ({count})",
+      "copyId": "Copiar ID",
+      "copied": "Copiado",
+      "noName": "(sin nombre)"
+    }
+  },
   "quickAdd": {
     "title": "Agregar movimiento",
     "expenseTab": "Gasto",

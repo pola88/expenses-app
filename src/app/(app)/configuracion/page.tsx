@@ -1,26 +1,29 @@
 import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
 import { Tag, Users, ChevronRight } from 'lucide-react'
 
-const items = [
-  {
-    href: '/configuracion/categorias',
-    icon: Tag,
-    label: 'Categorías',
-    description: 'Creá y editá las categorías de gastos del household',
-  },
-  {
-    href: '/configuracion/household',
-    icon: Users,
-    label: 'Household',
-    description: 'Miembros y código de invitación',
-  },
-]
+export default async function ConfiguracionPage() {
+  const t = await getTranslations('settings')
 
-export default function ConfiguracionPage() {
+  const items = [
+    {
+      href: '/configuracion/categorias',
+      icon: Tag,
+      label: t('categoriesLabel'),
+      description: t('categoriesDescription'),
+    },
+    {
+      href: '/configuracion/household',
+      icon: Users,
+      label: t('householdLabel'),
+      description: t('householdDescription'),
+    },
+  ]
+
   return (
     <div className="p-4 md:p-6 flex flex-col gap-4 max-w-2xl mx-auto w-full">
       <h1 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-        Configuración
+        {t('title')}
       </h1>
 
       <div className="flex flex-col gap-2">

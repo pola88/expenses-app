@@ -132,6 +132,44 @@
     "empty": "No exchanges recorded.",
     "emptyCta": "Add the first one with the + button"
   },
+  "settings": {
+    "title": "Settings",
+    "categoriesLabel": "Categories",
+    "categoriesDescription": "Create and edit expense categories for the household",
+    "householdLabel": "Household",
+    "householdDescription": "Members and invitation code",
+    "categories": {
+      "title": "Categories",
+      "new": "New",
+      "newTitle": "New category",
+      "editTitle": "Edit category",
+      "name": "Name",
+      "namePlaceholder": "e.g. Groceries",
+      "nameRequired": "Required",
+      "icon": "Icon",
+      "changeIcon": "Change icon",
+      "color": "Color",
+      "preview": "Preview",
+      "saving": "Saving...",
+      "save": "Save",
+      "created": "Category created",
+      "updated": "Category updated",
+      "deleted": "Category deleted",
+      "deleteError": "Error deleting",
+      "deleteConfirm": "Delete?",
+      "empty": "No categories yet.",
+      "emptyCta": "Create first category"
+    },
+    "household": {
+      "title": "Household",
+      "nameLabel": "Name",
+      "inviteId": "Invitation ID — share it for others to join",
+      "members": "Members ({count})",
+      "copyId": "Copy ID",
+      "copied": "Copied",
+      "noName": "(no name)"
+    }
+  },
   "quickAdd": {
     "title": "Add movement",
     "expenseTab": "Expense",

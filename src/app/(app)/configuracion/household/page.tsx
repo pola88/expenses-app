@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Copy, Check } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 
@@ -29,6 +30,7 @@ function avatarColor(id: string) {
 }
 
 function CopyButton({ text }: { text: string }) {
+  const t = useTranslations('settings.household')
   const [copied, setCopied] = useState(false)
 
   const handleCopy = async () => {
@@ -40,12 +42,13 @@ function CopyButton({ text }: { text: string }) {
   return (
     <Button variant="outline" size="sm" onClick={handleCopy} className="gap-1.5 shrink-0">
       {copied ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
-      {copied ? 'Copiado' : 'Copiar ID'}
+      {copied ? t('copied') : t('copyId')}
     </Button>
   )
 }
 
 export default function HouseholdPage() {
+  const t = useTranslations('settings.household')
   const { data: household, isLoading } = useQuery<Household>({
     queryKey: ['household'],
     queryFn: () => fetch('/api/household').then((r) => r.json()),
@@ -54,7 +57,7 @@ export default function HouseholdPage() {
   return (
     <div className="p-4 md:p-6 flex flex-col gap-4 max-w-2xl mx-auto w-full">
       <h1 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-        Household
+        {t('title')}
       </h1>
 
       {isLoading ? (
@@ -66,13 +69,11 @@ export default function HouseholdPage() {
         <>
           <div className="flex flex-col gap-3 rounded-xl border border-border bg-background px-4 py-4">
             <div>
-              <p className="text-xs text-muted-foreground mb-0.5">Nombre</p>
+              <p className="text-xs text-muted-foreground mb-0.5">{t('nameLabel')}</p>
               <p className="text-sm font-medium">{household.name}</p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground mb-1.5">
-                ID de invitación — compartilo para que otros se unan
-              </p>
+              <p className="text-xs text-muted-foreground mb-1.5">{t('inviteId')}</p>
               <div className="flex items-center gap-2">
                 <code className="flex-1 truncate rounded-lg border border-border bg-muted px-3 py-2 text-xs font-mono text-foreground">
                   {household.id}
@@ -84,7 +85,7 @@ export default function HouseholdPage() {
 
           <div className="flex flex-col gap-1">
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground px-1 mb-1">
-              Miembros ({household.members.length})
+              {t('members', { count: household.members.length })}
             </p>
             <div className="rounded-xl border border-border bg-background divide-y divide-border">
               {household.members.map((member) => (
@@ -96,7 +97,7 @@ export default function HouseholdPage() {
                   </div>
                   <div className="flex min-w-0 flex-col">
                     <span className="truncate text-sm font-medium">
-                      {member.name ?? '(sin nombre)'}
+                      {member.name ?? t('noName')}
                     </span>
                     <span className="truncate text-xs text-muted-foreground">
                       {member.email ?? ''}
