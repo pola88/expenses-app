@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import Decimal from 'decimal.js'
 import type { MovementIncome, IncomeTemplate } from '@/types/movement'
+import { apiFetch } from '@/lib/fetch'
 import { MovementItem } from '@/components/dashboard/movement-item'
 import { RecurringTemplateItem } from '@/components/dashboard/recurring-template-item'
 import { IncomeForm } from '@/components/quick-add/income-form'
@@ -39,14 +40,14 @@ export default function IngresosPage() {
   const { data: incomes = [], isLoading: loadingIncomes } = useQuery<MovementIncome[]>({
     queryKey: ['incomes'],
     queryFn: () =>
-      fetch('/api/incomes').then((r) => r.json()).then((items) =>
-        items.map((i: MovementIncome) => ({ ...i, type: 'income' as const }))
+      apiFetch<MovementIncome[]>('/api/incomes').then((items) =>
+        items.map((i) => ({ ...i, type: 'income' as const }))
       ),
   })
 
   const { data: templates = [], isLoading: loadingTemplates } = useQuery<IncomeTemplate[]>({
     queryKey: ['incomes', 'templates'],
-    queryFn: () => fetch('/api/incomes?templates=true').then((r) => r.json()),
+    queryFn: () => apiFetch<IncomeTemplate[]>('/api/incomes?templates=true'),
   })
 
   const isLoading = loadingIncomes || loadingTemplates

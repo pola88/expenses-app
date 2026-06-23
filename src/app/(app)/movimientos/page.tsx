@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useState, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
 import type { Movement, MovementExpense, MovementIncome, MovementExchange } from '@/types/movement'
+import { apiFetch } from '@/lib/fetch'
 import { MovementList } from '@/components/dashboard/movement-list'
 import { Skeleton } from '@/components/ui/skeleton'
 
@@ -18,24 +19,24 @@ export default function MovimientosPage() {
   const { data: expenses = [], isLoading: loadingE } = useQuery<MovementExpense[]>({
     queryKey: ['expenses'],
     queryFn: () =>
-      fetch('/api/expenses').then((r) => r.json()).then((items) =>
-        items.map((e: MovementExpense) => ({ ...e, type: 'expense' as const }))
+      apiFetch<MovementExpense[]>('/api/expenses').then((items) =>
+        items.map((e) => ({ ...e, type: 'expense' as const }))
       ),
   })
 
   const { data: incomes = [], isLoading: loadingI } = useQuery<MovementIncome[]>({
     queryKey: ['incomes'],
     queryFn: () =>
-      fetch('/api/incomes').then((r) => r.json()).then((items) =>
-        items.map((i: MovementIncome) => ({ ...i, type: 'income' as const }))
+      apiFetch<MovementIncome[]>('/api/incomes').then((items) =>
+        items.map((i) => ({ ...i, type: 'income' as const }))
       ),
   })
 
   const { data: exchanges = [], isLoading: loadingX } = useQuery<MovementExchange[]>({
     queryKey: ['exchanges'],
     queryFn: () =>
-      fetch('/api/exchanges').then((r) => r.json()).then((items) =>
-        items.map((x: MovementExchange) => ({ ...x, type: 'exchange' as const }))
+      apiFetch<MovementExchange[]>('/api/exchanges').then((items) =>
+        items.map((x) => ({ ...x, type: 'exchange' as const }))
       ),
   })
 

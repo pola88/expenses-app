@@ -15,6 +15,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { EmojiPicker, EmojiPickerSearch, EmojiPickerContent } from '@/components/ui/emoji-picker'
+import { apiFetch } from '@/lib/fetch'
 
 type Category = { id: string; name: string; icon: string; color: string }
 
@@ -139,55 +140,51 @@ export default function CategoriasPage() {
 
   const { data: categories = [], isLoading } = useQuery<Category[]>({
     queryKey: ['categories'],
-    queryFn: () => fetch('/api/categories').then((r) => r.json()),
+    queryFn: () => apiFetch<Category[]>('/api/categories'),
   })
 
   const createMutation = useMutation({
     mutationFn: (data: CategoryInput) =>
-      fetch('/api/categories', {
+      apiFetch('/api/categories', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
-      }).then((r) => r.json()),
+      }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['categories'] })
       setDialogOpen(false)
       toast.success(t('created'))
     },
+    onError: (err: Error) => toast.error(err.message),
   })
 
   const editMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: CategoryInput }) =>
-      fetch(`/api/categories/${id}`, {
+      apiFetch(`/api/categories/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
-      }).then((r) => r.json()),
+      }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['categories'] })
       setDialogOpen(false)
       setEditing(null)
       toast.success(t('updated'))
     },
+    onError: (err: Error) => toast.error(err.message),
   })
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) =>
-      fetch(`/api/categories/${id}`, { method: 'DELETE' }).then(async (r) => {
-        if (!r.ok) {
-          const body = await r.json()
-          throw new Error(body.error ?? t('deleteError'))
-        }
-        return r.json()
-      }),
+      apiFetch(`/api/categories/${id}`, { method: 'DELETE' }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['categories'] })
       setConfirmDeleteId(null)
       toast.success(t('deleted'))
     },
-    onError: (e: Error) => {
+    onError: (err: Error) => {
       setConfirmDeleteId(null)
-      toast.error(e.message)
+      toast.error(err.message)
     },
   })
 

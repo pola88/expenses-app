@@ -3,6 +3,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { WalletSummary } from '@/services/wallet.service'
+import { apiFetch } from '@/lib/fetch'
 
 const fmt = (val: string) =>
   new Intl.NumberFormat('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(
@@ -14,7 +15,7 @@ type Props = { householdId: string; initialData: WalletSummary }
 export function WalletCard({ householdId, initialData }: Props) {
   const { data, isLoading } = useQuery<WalletSummary>({
     queryKey: ['wallet', householdId],
-    queryFn: () => fetch('/api/wallet').then((r) => r.json()),
+    queryFn: () => apiFetch<WalletSummary>('/api/wallet'),
     initialData,
     staleTime: 30_000,
   })

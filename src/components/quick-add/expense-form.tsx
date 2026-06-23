@@ -14,6 +14,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
 import { cn } from '@/lib/utils'
+import { apiFetch } from '@/lib/fetch'
+import { toast } from 'sonner'
 
 type Category = { id: string; name: string; icon: string; color: string }
 
@@ -38,7 +40,7 @@ export function ExpenseForm({ onSuccess, editId, initialValues }: Props) {
 
   const { data: categories = [] } = useQuery<Category[]>({
     queryKey: ['categories'],
-    queryFn: () => fetch('/api/categories').then((r) => r.json()),
+    queryFn: () => apiFetch<Category[]>('/api/categories'),
   })
 
   const { register, handleSubmit, setValue, watch, formState: { errors } } =
@@ -57,12 +59,13 @@ export function ExpenseForm({ onSuccess, editId, initialValues }: Props) {
 
   const mutation = useMutation({
     mutationFn: (data: CreateExpenseInput) =>
-      fetch(editId ? `/api/expenses/${editId}` : '/api/expenses', {
+      apiFetch(editId ? `/api/expenses/${editId}` : '/api/expenses', {
         method: editId ? 'PATCH' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
-      }).then((r) => r.json()),
+      }),
     onSuccess,
+    onError: (err: Error) => toast.error(err.message),
   })
 
   return (

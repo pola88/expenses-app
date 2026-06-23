@@ -3,6 +3,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useTranslations } from 'next-intl'
 import type { MovementExchange } from '@/types/movement'
+import { apiFetch } from '@/lib/fetch'
 import { MovementItem } from '@/components/dashboard/movement-item'
 import { Skeleton } from '@/components/ui/skeleton'
 
@@ -12,8 +13,8 @@ export default function CambiosPage() {
   const { data: exchanges = [], isLoading } = useQuery<MovementExchange[]>({
     queryKey: ['exchanges'],
     queryFn: () =>
-      fetch('/api/exchanges').then((r) => r.json()).then((items) =>
-        items.map((x: MovementExchange) => ({ ...x, type: 'exchange' as const }))
+      apiFetch<MovementExchange[]>('/api/exchanges').then((items) =>
+        items.map((x) => ({ ...x, type: 'exchange' as const }))
       ),
   })
 

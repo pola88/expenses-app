@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { apiFetch } from '@/lib/fetch'
+import { toast } from 'sonner'
 
 const DAYS = Array.from({ length: 31 }, (_, i) => i + 1)
 
@@ -55,12 +57,13 @@ export function IncomeForm({ onSuccess, editId, initialValues }: Props) {
 
   const mutation = useMutation({
     mutationFn: (data: CreateIncomeInput) =>
-      fetch(editId ? `/api/incomes/${editId}` : '/api/incomes', {
+      apiFetch(editId ? `/api/incomes/${editId}` : '/api/incomes', {
         method: editId ? 'PATCH' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
-      }).then((r) => r.json()),
+      }),
     onSuccess,
+    onError: (err: Error) => toast.error(err.message),
   })
 
   return (

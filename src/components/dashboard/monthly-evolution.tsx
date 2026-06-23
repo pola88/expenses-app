@@ -8,6 +8,7 @@ import {
   ResponsiveContainer, Legend,
 } from 'recharts'
 import { Skeleton } from '@/components/ui/skeleton'
+import { apiFetch } from '@/lib/fetch'
 
 type MonthStat = {
   month: string
@@ -32,7 +33,7 @@ export function MonthlyEvolution() {
 
   const { data = [], isLoading } = useQuery<MonthStat[]>({
     queryKey: ['stats', 'monthly'],
-    queryFn: () => fetch('/api/stats/monthly').then((r) => r.json()),
+    queryFn: () => apiFetch<MonthStat[]>('/api/stats/monthly'),
   })
 
   const incomesLabel = tDash('incomes').replace(' ↑', '')

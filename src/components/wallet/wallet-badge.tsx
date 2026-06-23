@@ -3,6 +3,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useTranslations } from 'next-intl'
 import { Skeleton } from '@/components/ui/skeleton'
+import { apiFetch } from '@/lib/fetch'
 
 type WalletBalance = { ARS: string; USD: string }
 type WalletSummary = { balance: WalletBalance; month: { incomes: WalletBalance; expenses: WalletBalance } }
@@ -11,7 +12,7 @@ export function WalletBadge({ householdId }: { householdId: string }) {
   const t = useTranslations('wallet')
   const { data, isLoading } = useQuery<WalletSummary>({
     queryKey: ['wallet', householdId],
-    queryFn: () => fetch('/api/wallet').then((r) => r.json()),
+    queryFn: () => apiFetch<WalletSummary>('/api/wallet'),
     staleTime: 30_000,
   })
 

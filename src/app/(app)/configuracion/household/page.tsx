@@ -6,6 +6,7 @@ import { Copy, Check } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
+import { apiFetch } from '@/lib/fetch'
 
 type Member = { id: string; name: string | null; email: string | null; createdAt: string }
 type Household = { id: string; name: string; members: Member[] }
@@ -51,7 +52,7 @@ export default function HouseholdPage() {
   const t = useTranslations('settings.household')
   const { data: household, isLoading } = useQuery<Household>({
     queryKey: ['household'],
-    queryFn: () => fetch('/api/household').then((r) => r.json()),
+    queryFn: () => apiFetch<Household>('/api/household'),
   })
 
   return (

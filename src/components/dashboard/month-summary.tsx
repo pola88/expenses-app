@@ -3,6 +3,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useTranslations } from 'next-intl'
 import type { WalletSummary } from '@/services/wallet.service'
+import { apiFetch } from '@/lib/fetch'
 
 const fmt = (val: string) =>
   new Intl.NumberFormat('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(
@@ -15,7 +16,7 @@ export function MonthSummary({ householdId, initialData }: Props) {
   const t = useTranslations('dashboard.monthSummary')
   const { data } = useQuery<WalletSummary>({
     queryKey: ['wallet', householdId],
-    queryFn: () => fetch('/api/wallet').then((r) => r.json()),
+    queryFn: () => apiFetch<WalletSummary>('/api/wallet'),
     initialData,
     staleTime: 30_000,
   })

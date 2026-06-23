@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl'
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
 import { formatMoney } from '@/lib/money'
 import { Skeleton } from '@/components/ui/skeleton'
+import { apiFetch } from '@/lib/fetch'
 
 type CategoryStat = {
   id: string; name: string; icon: string; color: string
@@ -25,7 +26,7 @@ export function ExpensesByCategory() {
 
   const { data = [], isLoading } = useQuery<CategoryStat[]>({
     queryKey: ['stats', 'categories'],
-    queryFn: () => fetch('/api/stats/categories').then((r) => r.json()),
+    queryFn: () => apiFetch<CategoryStat[]>('/api/stats/categories'),
   })
 
   const chartData = data

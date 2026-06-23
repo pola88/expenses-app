@@ -11,6 +11,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { formatMoney, formatRate } from '@/lib/money'
+import { apiFetch } from '@/lib/fetch'
+import { toast } from 'sonner'
 
 type Currency = 'ARS' | 'USD'
 type CommissionType = 'pct' | 'fixed'
@@ -93,12 +95,13 @@ export function ExchangeForm({ onSuccess }: { onSuccess: () => void }) {
 
   const mutation = useMutation({
     mutationFn: (data: CreateExchangeInput) =>
-      fetch('/api/exchanges', {
+      apiFetch('/api/exchanges', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
-      }).then((r) => r.json()),
+      }),
     onSuccess,
+    onError: (err: Error) => toast.error(err.message),
   })
 
   return (

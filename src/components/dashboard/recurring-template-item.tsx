@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import type { IncomeTemplate } from '@/types/movement'
 import { formatMoney } from '@/lib/money'
+import { apiFetch } from '@/lib/fetch'
 
 type Props = { template: IncomeTemplate; onEdit: (t: IncomeTemplate) => void }
 
@@ -28,26 +29,28 @@ export function RecurringTemplateItem({ template, onEdit }: Props) {
 
   const stopMutation = useMutation({
     mutationFn: () =>
-      fetch(`/api/incomes/${template.id}/stop`, { method: 'POST' }).then((r) => r.json()),
+      apiFetch(`/api/incomes/${template.id}/stop`, { method: 'POST' }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['incomes', 'templates'] })
       qc.invalidateQueries({ queryKey: ['wallet'] })
       toast.success(t('stoppedToast'))
     },
+    onError: (err: Error) => toast.error(err.message),
   })
 
   const resumeMutation = useMutation({
     mutationFn: () =>
-      fetch(`/api/incomes/${template.id}`, {
+      apiFetch(`/api/incomes/${template.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ recurringActive: true }),
-      }).then((r) => r.json()),
+      }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['incomes', 'templates'] })
       qc.invalidateQueries({ queryKey: ['wallet'] })
       toast.success(t('resumedToast'))
     },
+    onError: (err: Error) => toast.error(err.message),
   })
 
   return (

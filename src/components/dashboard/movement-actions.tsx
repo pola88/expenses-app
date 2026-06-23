@@ -27,6 +27,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { ExpenseForm } from '@/components/quick-add/expense-form'
 import { IncomeForm } from '@/components/quick-add/income-form'
 import type { Movement } from '@/types/movement'
+import { apiFetch } from '@/lib/fetch'
 
 type Props = { movement: Movement }
 
@@ -97,11 +98,12 @@ export function MovementActions({ movement }: Props) {
 
   const deleteMutation = useMutation({
     mutationFn: () =>
-      fetch(`/api/${ENDPOINT[movement.type]}/${movement.id}`, { method: 'DELETE' }).then((r) => r.json()),
+      apiFetch(`/api/${ENDPOINT[movement.type]}/${movement.id}`, { method: 'DELETE' }),
     onSuccess: () => {
       invalidate()
       toast.success(t('deleted'))
     },
+    onError: (err: Error) => toast.error(err.message),
   })
 
   const handleEditSuccess = () => {
