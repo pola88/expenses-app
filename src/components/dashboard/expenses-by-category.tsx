@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslations } from 'next-intl'
+import { useSearchParams } from 'next/navigation'
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
 import { formatMoney } from '@/lib/money'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -23,10 +24,15 @@ const chip = (active: boolean) =>
 export function ExpensesByCategory() {
   const t = useTranslations('dashboard.byCategory')
   const [currency, setCurrency] = useState<Currency>('ARS')
+  const searchParams = useSearchParams()
+  const month = searchParams.get('month') ?? undefined
 
   const { data = [], isLoading } = useQuery<CategoryStat[]>({
-    queryKey: ['stats', 'categories'],
-    queryFn: () => apiFetch<CategoryStat[]>('/api/stats/categories'),
+    queryKey: ['stats', 'categories', month],
+    queryFn: () => {
+      const url = month ? `/api/stats/categories?month=${month}` : '/api/stats/categories'
+      return apiFetch<CategoryStat[]>(url)
+    },
   })
 
   const chartData = data

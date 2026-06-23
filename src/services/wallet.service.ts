@@ -51,8 +51,10 @@ export async function getWalletBalance(householdId: string): Promise<WalletBalan
 }
 
 export async function getWalletSummary(householdId: string, month: Date): Promise<WalletSummary> {
-  const from = new Date(month.getFullYear(), month.getMonth(), 1)
-  const to = new Date(month.getFullYear(), month.getMonth() + 1, 0, 23, 59, 59)
+  const y = month.getUTCFullYear()
+  const mo = month.getUTCMonth()
+  const from = new Date(Date.UTC(y, mo, 1))
+  const to = new Date(Date.UTC(y, mo + 1, 0, 23, 59, 59, 999))
 
   const [balance, monthIncomes, monthExpenses] = await Promise.all([
     getWalletBalance(householdId),
@@ -75,11 +77,15 @@ export async function getWalletSummary(householdId: string, month: Date): Promis
   }
 }
 
-export async function getRecentMovements(householdId: string, limit = 10): Promise<Movement[]> {
+export async function getRecentMovements(
+  householdId: string,
+  limit = 10,
+  filter?: { from: Date; to: Date },
+): Promise<Movement[]> {
   const [expenses, incomes, exchanges] = await Promise.all([
-    expenseRepository.findByHousehold(householdId),
-    incomeRepository.findByHousehold(householdId),
-    exchangeRepository.findByHousehold(householdId),
+    expenseRepository.findByHousehold(householdId, filter),
+    incomeRepository.findByHousehold(householdId, filter),
+    exchangeRepository.findByHousehold(householdId, filter),
   ])
 
   const movements: Movement[] = [

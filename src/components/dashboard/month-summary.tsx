@@ -2,6 +2,8 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { useTranslations } from 'next-intl'
+import { useSearchParams } from 'next/navigation'
+import { Skeleton } from '@/components/ui/skeleton'
 import type { WalletSummary } from '@/services/wallet.service'
 import { apiFetch } from '@/lib/fetch'
 
@@ -10,16 +12,29 @@ const fmt = (val: string) =>
     parseFloat(val),
   )
 
-type Props = { householdId: string; initialData: WalletSummary }
+type Props = { householdId: string }
 
-export function MonthSummary({ householdId, initialData }: Props) {
+export function MonthSummary({ householdId }: Props) {
   const t = useTranslations('dashboard.monthSummary')
-  const { data } = useQuery<WalletSummary>({
-    queryKey: ['wallet', householdId],
-    queryFn: () => apiFetch<WalletSummary>('/api/wallet'),
-    initialData,
-    staleTime: 30_000,
+  const searchParams = useSearchParams()
+  const month = searchParams.get('month') ?? undefined
+
+  const { data, isLoading } = useQuery<WalletSummary>({
+    queryKey: ['wallet-month', householdId, month],
+    queryFn: () => {
+      const url = month ? `/api/wallet?month=${month}` : '/api/wallet'
+      return apiFetch<WalletSummary>(url)
+    },
   })
+
+  if (isLoading || !data) {
+    return (
+      <div className="grid grid-cols-2 gap-3">
+        <Skeleton className="h-20 rounded-xl" />
+        <Skeleton className="h-20 rounded-xl" />
+      </div>
+    )
+  }
 
   const { incomes, expenses } = data.month
 

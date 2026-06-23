@@ -2,10 +2,12 @@ import { apiHandler, ok } from '@/lib/api'
 import { prisma } from '@/lib/prisma'
 import Decimal from 'decimal.js'
 
-export const GET = apiHandler(async (_, { householdId }) => {
-  const now = new Date()
-  const from = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1))
-  const to = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1))
+export const GET = apiHandler(async (req, { householdId }) => {
+  const { searchParams } = new URL(req.url)
+  const monthParam = searchParams.get('month')
+  const ref = monthParam ? new Date(`${monthParam}-01T00:00:00Z`) : new Date()
+  const from = new Date(Date.UTC(ref.getUTCFullYear(), ref.getUTCMonth(), 1))
+  const to = new Date(Date.UTC(ref.getUTCFullYear(), ref.getUTCMonth() + 1, 1))
 
   const expenses = await prisma.expense.findMany({
     where: { householdId, date: { gte: from, lt: to } },

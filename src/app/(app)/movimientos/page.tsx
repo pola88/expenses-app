@@ -3,10 +3,13 @@
 import { useQuery } from '@tanstack/react-query'
 import { useState, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
+import { useSearchParams } from 'next/navigation'
 import type { Movement, MovementExpense, MovementIncome, MovementExchange } from '@/types/movement'
 import { apiFetch } from '@/lib/fetch'
 import { MovementList } from '@/components/dashboard/movement-list'
 import { Skeleton } from '@/components/ui/skeleton'
+import { MonthNavigator } from '@/components/ui/month-navigator'
+import { parseMonthParam, monthBounds } from '@/lib/month'
 
 type FilterType = 'all' | 'expense' | 'income' | 'exchange'
 type FilterCurrency = 'all' | 'ARS' | 'USD'
@@ -16,26 +19,32 @@ export default function MovimientosPage() {
   const [type, setType] = useState<FilterType>('all')
   const [currency, setCurrency] = useState<FilterCurrency>('all')
 
+  const searchParams = useSearchParams()
+  const selectedMonth = parseMonthParam(searchParams.get('month'))
+  const { from: fromDate, to: toDate } = monthBounds(selectedMonth)
+  const from = fromDate.toISOString()
+  const to = toDate.toISOString()
+
   const { data: expenses = [], isLoading: loadingE } = useQuery<MovementExpense[]>({
-    queryKey: ['expenses'],
+    queryKey: ['expenses', from],
     queryFn: () =>
-      apiFetch<MovementExpense[]>('/api/expenses').then((items) =>
+      apiFetch<MovementExpense[]>(`/api/expenses?from=${from}&to=${to}`).then((items) =>
         items.map((e) => ({ ...e, type: 'expense' as const }))
       ),
   })
 
   const { data: incomes = [], isLoading: loadingI } = useQuery<MovementIncome[]>({
-    queryKey: ['incomes'],
+    queryKey: ['incomes', from],
     queryFn: () =>
-      apiFetch<MovementIncome[]>('/api/incomes').then((items) =>
+      apiFetch<MovementIncome[]>(`/api/incomes?from=${from}&to=${to}`).then((items) =>
         items.map((i) => ({ ...i, type: 'income' as const }))
       ),
   })
 
   const { data: exchanges = [], isLoading: loadingX } = useQuery<MovementExchange[]>({
-    queryKey: ['exchanges'],
+    queryKey: ['exchanges', from],
     queryFn: () =>
-      apiFetch<MovementExchange[]>('/api/exchanges').then((items) =>
+      apiFetch<MovementExchange[]>(`/api/exchanges?from=${from}&to=${to}`).then((items) =>
         items.map((x) => ({ ...x, type: 'exchange' as const }))
       ),
   })
@@ -82,6 +91,8 @@ export default function MovimientosPage() {
       <h1 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
         {t('title')}
       </h1>
+
+      <MonthNavigator />
 
       <div className="flex flex-col gap-1.5">
         <div className="flex gap-1">

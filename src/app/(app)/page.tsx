@@ -6,19 +6,26 @@ import { MonthSummary } from '@/components/dashboard/month-summary'
 import { MovementList } from '@/components/dashboard/movement-list'
 import { ExpensesByCategory } from '@/components/dashboard/expenses-by-category'
 import { MonthlyEvolution } from '@/components/dashboard/monthly-evolution'
+import { MonthNavigator } from '@/components/ui/month-navigator'
+import { parseMonthParam, monthBounds } from '@/lib/month'
+import { Suspense } from 'react'
 
-export default async function DashboardPage() {
+type Props = { searchParams: Promise<{ month?: string }> }
+
+export default async function DashboardPage({ searchParams }: Props) {
   const session = await requireHousehold()
   const householdId = session.user.householdId
   const t = await getTranslations('dashboard')
 
-  const [summary, movements] = await Promise.all([
-    getWalletSummary(householdId, new Date()),
-    getRecentMovements(householdId, 10),
-  ])
+  const { month: monthParam } = await searchParams
+  const selectedMonth = parseMonthParam(monthParam)
 
-  const now = new Date()
-  const monthLabel = now.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' })
+  const { from, to } = monthBounds(selectedMonth)
+
+  const [summary, movements] = await Promise.all([
+    getWalletSummary(householdId, selectedMonth),
+    getRecentMovements(householdId, 10, { from, to }),
+  ])
 
   return (
     <div className="p-4 md:p-6 flex flex-col gap-6 max-w-2xl mx-auto w-full">
@@ -29,21 +36,21 @@ export default async function DashboardPage() {
         <WalletCard householdId={householdId} initialData={summary} />
       </section>
 
-      <section>
-        <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3 capitalize">
-          {monthLabel}
-        </h2>
-        <MonthSummary householdId={householdId} initialData={summary} />
+      <section className="flex flex-col gap-4">
+        <Suspense>
+          <MonthNavigator />
+        </Suspense>
+        <MonthSummary householdId={householdId} />
+        <Suspense>
+          <ExpensesByCategory />
+        </Suspense>
       </section>
 
       <section>
         <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
           {t('analysis')}
         </h2>
-        <div className="flex flex-col gap-4">
-          <ExpensesByCategory />
-          <MonthlyEvolution />
-        </div>
+        <MonthlyEvolution />
       </section>
 
       <section>

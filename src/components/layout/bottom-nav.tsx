@@ -23,7 +23,7 @@ export function BottomNav({ onQuickAdd }: { onQuickAdd: () => void }) {
   return (
     <nav className="border-t border-border bg-background px-4 pb-4 pt-2">
       <div className="flex items-center gap-1 rounded-2xl bg-muted/60 p-1">
-        {NAV_ITEMS.map((item, i) => {
+        {NAV_ITEMS.map((item) => {
           if (!item) {
             return (
               <button key="fab" onClick={onQuickAdd}
