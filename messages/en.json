@@ -73,7 +73,9 @@
     },
     "byCategory": {
       "title": "By category",
-      "empty": "No expenses this month"
+      "empty": "No expenses this month",
+      "showMore": "Show more",
+      "showLess": "Show less"
     },
     "monthlyEvolution": {
       "title": "Monthly evolution"

@@ -73,7 +73,9 @@
     },
     "byCategory": {
       "title": "Por categoría",
-      "empty": "Sin gastos este mes"
+      "empty": "Sin gastos este mes",
+      "showMore": "Ver más",
+      "showLess": "Ver menos"
     },
     "monthlyEvolution": {
       "title": "Evolución mensual"

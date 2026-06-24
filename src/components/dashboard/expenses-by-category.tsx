@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslations } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
@@ -24,6 +25,8 @@ const chip = (active: boolean) =>
 export function ExpensesByCategory() {
   const t = useTranslations('dashboard.byCategory')
   const [currency, setCurrency] = useState<Currency>('ARS')
+  const [showAll, setShowAll] = useState(false)
+  const VISIBLE = 4
   const searchParams = useSearchParams()
   const month = searchParams.get('month') ?? undefined
 
@@ -94,19 +97,37 @@ export function ExpensesByCategory() {
           </ResponsiveContainer>
 
           <div className="flex flex-col gap-1.5">
-            {chartData.map((c) => (
-              <div key={c.id} className="flex items-center gap-2">
-                <span className="text-sm">{c.icon}</span>
-                <span
-                  className="h-2 w-2 shrink-0 rounded-full"
-                  style={{ backgroundColor: c.color }}
-                />
-                <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">{c.name}</span>
-                <span className="text-xs font-medium tabular-nums">
-                  {total > 0 ? Math.round((c.value / total) * 100) : 0}%
-                </span>
-              </div>
-            ))}
+            <AnimatePresence initial={false}>
+              {(showAll ? chartData : chartData.slice(0, VISIBLE)).map((c, i) => (
+                <motion.div
+                  key={c.id}
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.15, delay: i * 0.03 }}
+                  className="flex items-center gap-2"
+                >
+                  <span className="text-sm">{c.icon}</span>
+                  <span
+                    className="h-2 w-2 shrink-0 rounded-full"
+                    style={{ backgroundColor: c.color }}
+                  />
+                  <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">{c.name}</span>
+                  <span className="text-xs font-medium tabular-nums">
+                    {total > 0 ? Math.round((c.value / total) * 100) : 0}%
+                  </span>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+            {chartData.length > VISIBLE && (
+              <button
+                type="button"
+                onClick={() => setShowAll(v => !v)}
+                className="mt-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {showAll ? t('showLess') : t('showMore')}
+              </button>
+            )}
           </div>
         </>
       )}
