@@ -8,6 +8,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       user={{
         id: session.user.id,
         name: session.user.name ?? '',
+        email: session.user.email ?? '',
         householdId: session.user.householdId,
       }}
     >

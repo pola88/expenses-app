@@ -6,7 +6,7 @@ import { QuickAddSheet } from '@/components/quick-add/quick-add-sheet'
 import { useState } from 'react'
 
 type Props = {
-  user: { id: string; name: string; householdId: string }
+  user: { id: string; name: string; email: string; householdId: string }
   children: React.ReactNode
 }
 
