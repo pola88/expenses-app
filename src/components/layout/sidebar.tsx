@@ -39,13 +39,13 @@ export function Sidebar({ user, onQuickAdd }: Props) {
 
   const NAV_MAIN = [
     { href: '/',            label: t('home'),      icon: Home },
-    { href: '/movimientos', label: t('movements'), icon: List },
-    { href: '/ingresos',    label: t('incomes'),   icon: Wallet },
-    { href: '/cambios',     label: t('exchanges'), icon: ArrowLeftRight },
+    { href: '/transactions', label: t('movements'), icon: List },
+    { href: '/income',       label: t('incomes'),   icon: Wallet },
+    { href: '/exchanges',    label: t('exchanges'), icon: ArrowLeftRight },
   ]
 
   const NAV_SYSTEM = [
-    { href: '/configuracion', label: t('settings'), icon: Settings },
+    { href: '/settings', label: t('settings'), icon: Settings },
   ]
 
   return (

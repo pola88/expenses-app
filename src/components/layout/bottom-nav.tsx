@@ -14,10 +14,10 @@ export function BottomNav({ onQuickAdd }: { onQuickAdd: () => void }) {
 
   const NAV_ITEMS = [
     { href: '/',              label: t('home'),     icon: Home },
-    { href: '/movimientos',   label: t('expenses'), icon: List },
+    { href: '/transactions', label: t('expenses'), icon: List },
     null,
-    { href: '/ingresos',      label: t('incomes'), icon: Wallet },
-    { href: '/configuracion', label: t('config'),  icon: Settings },
+    { href: '/income',       label: t('incomes'), icon: Wallet },
+    { href: '/settings',     label: t('config'),  icon: Settings },
   ]
 
   return (

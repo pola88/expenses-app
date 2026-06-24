@@ -4,7 +4,7 @@ import { Tag, Users, ChevronRight } from 'lucide-react'
 import { requireHousehold } from '@/lib/session'
 import { LogoutButton } from '@/components/auth/logout-button'
 
-export default async function ConfiguracionPage() {
+export default async function SettingsPage() {
   const [session, t] = await Promise.all([
     requireHousehold(),
     getTranslations('settings'),
@@ -20,13 +20,13 @@ export default async function ConfiguracionPage() {
 
   const items = [
     {
-      href: '/configuracion/categorias',
+      href: '/settings/categories',
       icon: Tag,
       label: t('categoriesLabel'),
       description: t('categoriesDescription'),
     },
     {
-      href: '/configuracion/household',
+      href: '/settings/household',
       icon: Users,
       label: t('householdLabel'),
       description: t('householdDescription'),
