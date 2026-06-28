@@ -10,7 +10,10 @@
     "usd": "USD$",
     "optional": "(optional)",
     "all": "All",
-    "actions": "Actions"
+    "actions": "Actions",
+    "prev": "Previous",
+    "next": "Next",
+    "pageOf": "{current} of {total}"
   },
   "nav": {
     "home": "Home",

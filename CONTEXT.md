@@ -235,6 +235,9 @@ src/
 23. **Configuración/household** — ver miembros con avatar, copiar ID de invitación
 24. **i18n** — next-intl integrado con language toggle
 25. **Ingresos recurrentes** — modelo de templates + auto-sync mensual vía `syncRecurringIncomes` (llamado desde wallet query)
+26. **Totales en /transactions** — cards ARS/USD visibles al filtrar por Gasto, Ingreso o Cambio
+27. **Totales en /exchanges** — cards ARS/USD con volumen total cambiado de cada moneda
+28. **Paginado** — componente `Pagination` reutilizable (chevrons, touch-friendly); aplicado en /exchanges y /transactions
 
 ---
 
@@ -253,12 +256,11 @@ Los ingresos recurrentes usan un modelo de **template + instancias**:
 ### Prioridad media
 
 1. **Gastos recurrentes** — el modelo solo soporta `isRecurring` en `Income`, no en `Expense`. Requiere migración de Prisma + mismo patrón template/instancia
-2. **Totales en /movimientos** — mostrar totales ARS/USD cuando el filtro está en "gasto" o "ingreso"
 
 ### Prioridad baja (V2)
 
-3. Bot de Telegram
-4. API pública para n8n
+2. Bot de Telegram
+3. API pública para n8n
 
 
 ## Variables de entorno necesarias
