@@ -4,6 +4,9 @@ import { createExpenseSchema } from '@/dtos/expense.dto'
 
 export const GET = apiHandler(async (req, { householdId }) => {
   const { searchParams } = new URL(req.url)
+  if (searchParams.get('templates') === 'true') {
+    return ok(await expenseService.listTemplates(householdId))
+  }
   const filters = {
     categoryId: searchParams.get('categoryId') ?? undefined,
     currency: (searchParams.get('currency') as 'ARS' | 'USD') ?? undefined,

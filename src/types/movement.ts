@@ -5,6 +5,8 @@ export type MovementExpense = {
   amount: string
   currency: 'ARS' | 'USD'
   description: string
+  isRecurring: boolean
+  recurringSourceId: string | null
   category: { id: string; name: string; icon: string; color: string }
   user: { id: string; name: string | null }
 }
@@ -18,6 +20,19 @@ export type MovementIncome = {
   description: string
   isRecurring: boolean
   recurringSourceId: string | null
+  user: { id: string; name: string | null }
+}
+
+export type ExpenseTemplate = {
+  id: string
+  amount: string
+  currency: 'ARS' | 'USD'
+  description: string
+  recurringDay: number
+  recurringActive: boolean
+  categoryId: string
+  category: { id: string; name: string; icon: string; color: string }
+  date: string
   user: { id: string; name: string | null }
 }
 

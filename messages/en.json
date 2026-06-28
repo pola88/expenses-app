@@ -113,6 +113,17 @@
   "wallet": {
     "title": "Wallet"
   },
+  "expenses": {
+    "title": "Expenses",
+    "recurringConfigured": "Configured recurring",
+    "all": "All",
+    "variable": "Variable",
+    "recurring": "Recurring",
+    "empty": "No expenses recorded.",
+    "emptyCta": "Add the first one with the + button",
+    "editRecurring": "Edit recurring",
+    "recurringUpdated": "Recurring updated"
+  },
   "movements": {
     "title": "Movements",
     "all": "All",
@@ -196,6 +207,12 @@
       "description": "Description",
       "descriptionPlaceholder": "e.g. Groceries, Restaurant...",
       "date": "Date",
+      "type": "Type",
+      "variable": "Variable",
+      "recurring": "Recurring",
+      "recurringDay": "Day of month",
+      "recurringDayPlaceholder": "Pick a day",
+      "recurringDayOption": "Day {day}",
       "saveButton": "Save expense",
       "saveChanges": "Save changes"
     },

@@ -113,6 +113,17 @@
   "wallet": {
     "title": "Wallet"
   },
+  "expenses": {
+    "title": "Gastos",
+    "recurringConfigured": "Recurrentes configurados",
+    "all": "Todos",
+    "variable": "Variable",
+    "recurring": "Recurrente",
+    "empty": "No hay gastos registrados.",
+    "emptyCta": "Agregá el primero con el botón +",
+    "editRecurring": "Editar recurrente",
+    "recurringUpdated": "Recurrente actualizado"
+  },
   "movements": {
     "title": "Movimientos",
     "all": "Todos",
@@ -196,6 +207,12 @@
       "description": "Descripción",
       "descriptionPlaceholder": "ej: Disco, Coto...",
       "date": "Fecha",
+      "type": "Tipo",
+      "variable": "Variable",
+      "recurring": "Recurrente",
+      "recurringDay": "Día del mes",
+      "recurringDayPlaceholder": "Elegí el día",
+      "recurringDayOption": "Día {day}",
       "saveButton": "Guardar gasto",
       "saveChanges": "Guardar cambios"
     },

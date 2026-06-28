@@ -116,12 +116,16 @@ model Income {
 }
 
 model Expense {
-  id          String   @id @default(cuid())
-  amount      Decimal  @db.Decimal(18, 2)
-  currency    Currency
-  description String
-  date        DateTime
-  createdAt   DateTime @default(now())
+  id                String   @id @default(cuid())
+  amount            Decimal  @db.Decimal(18, 2)
+  currency          Currency
+  description       String
+  date              DateTime
+  isRecurring       Boolean  @default(false)
+  recurringDay      Int?
+  recurringActive   Boolean  @default(true)
+  recurringSourceId String?
+  createdAt         DateTime @default(now())
 
   householdId String
   household   Household @relation(fields: [householdId], references: [id])
@@ -129,6 +133,9 @@ model Expense {
   user        User      @relation(fields: [userId], references: [id])
   categoryId  String
   category    Category  @relation(fields: [categoryId], references: [id])
+
+  recurringSource    Expense?  @relation("RecurringExpenseInstances", fields: [recurringSourceId], references: [id], onDelete: SetNull)
+  recurringInstances Expense[] @relation("RecurringExpenseInstances")
 }
 
 model CurrencyExchange {

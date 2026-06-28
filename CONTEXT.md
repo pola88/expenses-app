@@ -238,6 +238,7 @@ src/
 26. **Totales en /transactions** — cards ARS/USD visibles al filtrar por Gasto, Ingreso o Cambio
 27. **Totales en /exchanges** — cards ARS/USD con volumen total cambiado de cada moneda
 28. **Paginado** — componente `Pagination` reutilizable (chevrons, touch-friendly); aplicado en /exchanges y /transactions
+29. **Gastos recurrentes** — mismo patrón template/instancia que ingresos: `isRecurring`, `recurringDay`, `recurringActive`, `recurringSourceId` en `Expense`. Auto-sync en `getWalletBalance`. Templates visibles y editables en /transactions cuando filtro es "Gasto"
 
 ---
 
@@ -253,14 +254,10 @@ Los ingresos recurrentes usan un modelo de **template + instancias**:
 
 ## Lo que falta implementar ⏳
 
-### Prioridad media
-
-1. **Gastos recurrentes** — el modelo solo soporta `isRecurring` en `Income`, no en `Expense`. Requiere migración de Prisma + mismo patrón template/instancia
-
 ### Prioridad baja (V2)
 
-2. Bot de Telegram
-3. API pública para n8n
+1. Bot de Telegram
+2. API pública para n8n
 
 
 ## Variables de entorno necesarias

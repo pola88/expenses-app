@@ -17,6 +17,8 @@ import { cn } from '@/lib/utils'
 import { apiFetch } from '@/lib/fetch'
 import { toast } from 'sonner'
 
+const DAYS = Array.from({ length: 31 }, (_, i) => i + 1)
+
 type Category = { id: string; name: string; icon: string; color: string }
 
 type InitialValues = {
@@ -25,6 +27,8 @@ type InitialValues = {
   description: string
   date: string
   categoryId: string
+  isRecurring?: boolean
+  recurringDay?: number
 }
 
 type Props = {
@@ -53,9 +57,13 @@ export function ExpenseForm({ onSuccess, editId, initialValues }: Props) {
             description: initialValues.description,
             date: initialValues.date as unknown as Date,
             categoryId: initialValues.categoryId,
+            isRecurring: initialValues.isRecurring ?? false,
+            recurringDay: initialValues.recurringDay,
           }
-        : { currency: 'ARS', date: new Date().toISOString().split('T')[0] as unknown as Date },
+        : { currency: 'ARS', isRecurring: false, date: new Date().toISOString().split('T')[0] as unknown as Date },
     })
+
+  const isRecurring = watch('isRecurring')
 
   const mutation = useMutation({
     mutationFn: (data: CreateExpenseInput) =>
@@ -128,6 +136,50 @@ export function ExpenseForm({ onSuccess, editId, initialValues }: Props) {
         <Label>{t('description')} <span className="text-muted-foreground">{tCommon('optional')}</span></Label>
         <Input {...register('description')} placeholder={t('descriptionPlaceholder')} />
       </div>
+
+      <div className="flex flex-col gap-1">
+        <Label>{t('type')}</Label>
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={() => { setValue('isRecurring', false); setValue('recurringDay', undefined) }}
+            className={`rounded-lg border px-3 py-2 text-sm transition-colors
+              ${!isRecurring ? 'border-foreground bg-muted font-medium' : 'border-border text-muted-foreground'}`}
+          >
+            {t('variable')}
+          </button>
+          <button
+            type="button"
+            onClick={() => setValue('isRecurring', true)}
+            className={`rounded-lg border px-3 py-2 text-sm transition-colors
+              ${isRecurring ? 'border-foreground bg-muted font-medium' : 'border-border text-muted-foreground'}`}
+          >
+            {t('recurring')}
+          </button>
+        </div>
+      </div>
+
+      {isRecurring && (
+        <div className="flex flex-col gap-1">
+          <Label>{t('recurringDay')}</Label>
+          <Select
+            defaultValue={initialValues?.recurringDay ? String(initialValues.recurringDay) : undefined}
+            onValueChange={(v) => setValue('recurringDay', parseInt(v))}
+          >
+            <SelectTrigger><SelectValue placeholder={t('recurringDayPlaceholder')} /></SelectTrigger>
+            <SelectContent>
+              {DAYS.map((d) => (
+                <SelectItem key={d} value={String(d)}>
+                  {t('recurringDayOption', { day: d })}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.recurringDay && (
+            <p className="text-xs text-destructive">{errors.recurringDay.message}</p>
+          )}
+        </div>
+      )}
 
       <div className="flex flex-col gap-1">
         <Label>{t('date')}</Label>

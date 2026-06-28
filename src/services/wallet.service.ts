@@ -3,6 +3,7 @@ import { incomeRepository } from '@/repositories/income.repository'
 import { expenseRepository } from '@/repositories/expense.repository'
 import { exchangeRepository } from '@/repositories/exchange.repository'
 import { incomeService } from '@/services/income.service'
+import { expenseService } from '@/services/expense.service'
 import type { Movement } from '@/types/movement'
 
 export type WalletBalance = { ARS: string; USD: string }
@@ -18,7 +19,10 @@ export type WalletSummary = {
 export type { Movement }
 
 export async function getWalletBalance(householdId: string): Promise<WalletBalance> {
-  await incomeService.syncRecurringIncomes(householdId)
+  await Promise.all([
+    incomeService.syncRecurringIncomes(householdId),
+    expenseService.syncRecurringExpenses(householdId),
+  ])
 
   const [incomes, expenses, exchanges] = await Promise.all([
     incomeRepository.findByHousehold(householdId),
@@ -96,6 +100,8 @@ export async function getRecentMovements(
       amount: e.amount.toString(),
       currency: e.currency,
       description: e.description,
+      isRecurring: e.isRecurring,
+      recurringSourceId: e.recurringSourceId,
       category: { id: e.category.id, name: e.category.name, icon: e.category.icon, color: e.category.color },
       user: e.user,
     })),

@@ -1,33 +1,51 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
-import { useState, useMemo } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useState, useMemo, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import Decimal from 'decimal.js'
-import type { Movement, MovementExpense, MovementIncome, MovementExchange } from '@/types/movement'
+import type { Movement, MovementExpense, MovementIncome, MovementExchange, ExpenseTemplate } from '@/types/movement'
 import { apiFetch } from '@/lib/fetch'
 import { MovementList } from '@/components/dashboard/movement-list'
+import { RecurringExpenseTemplateItem } from '@/components/dashboard/recurring-expense-template-item'
+import { ExpenseForm } from '@/components/quick-add/expense-form'
 import { Skeleton } from '@/components/ui/skeleton'
 import { MonthNavigator } from '@/components/ui/month-navigator'
 import { Pagination } from '@/components/ui/pagination'
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { parseMonthParam, monthBounds } from '@/lib/month'
+import { toast } from 'sonner'
+
+const PAGE_SIZE = 10
 
 const fmt = (val: string) =>
   new Intl.NumberFormat('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(
     parseFloat(val),
   )
 
-const PAGE_SIZE = 10
-
 type FilterType = 'all' | 'expense' | 'income' | 'exchange'
 type FilterCurrency = 'all' | 'ARS' | 'USD'
 
 export default function MovimientosPage() {
   const t = useTranslations('movements')
+  const tExp = useTranslations('expenses')
+  const qc = useQueryClient()
   const [type, setType] = useState<FilterType>('all')
   const [currency, setCurrency] = useState<FilterCurrency>('all')
   const [page, setPage] = useState(0)
+  const [editTemplate, setEditTemplate] = useState<ExpenseTemplate | null>(null)
+  const [isDesktop, setIsDesktop] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches
+  )
+
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)')
+    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
 
   const searchParams = useSearchParams()
   const selectedMonth = parseMonthParam(searchParams.get('month'))
@@ -59,6 +77,11 @@ export default function MovimientosPage() {
       ),
   })
 
+  const { data: templates = [], isLoading: loadingTemplates } = useQuery<ExpenseTemplate[]>({
+    queryKey: ['expenses', 'templates'],
+    queryFn: () => apiFetch<ExpenseTemplate[]>('/api/expenses?templates=true'),
+  })
+
   const isLoading = loadingE || loadingI || loadingX
 
   const movements = useMemo<Movement[]>(() => {
@@ -86,7 +109,6 @@ export default function MovimientosPage() {
         items.filter((m) => m.currency === cur).reduce((acc, m) => acc.plus(m.amount), new Decimal(0)).toFixed(2)
       return { ARS: sum('ARS'), USD: sum('USD') }
     }
-    // type === 'exchange'
     const items = movements.filter((m): m is MovementExchange => m.type === 'exchange')
     const sum = (cur: 'ARS' | 'USD') =>
       items.reduce((acc, x) => {
@@ -120,6 +142,30 @@ export default function MovimientosPage() {
     { value: 'ARS', label: 'ARS$' },
     { value: 'USD', label: 'USD$' },
   ]
+
+  const handleEditSuccess = () => {
+    setEditTemplate(null)
+    qc.invalidateQueries({ queryKey: ['expenses', 'templates'] })
+    qc.invalidateQueries({ queryKey: ['expenses', from] })
+    qc.invalidateQueries({ queryKey: ['wallet'] })
+    toast.success(tExp('recurringUpdated'))
+  }
+
+  const editForm = editTemplate ? (
+    <ExpenseForm
+      editId={editTemplate.id}
+      initialValues={{
+        amount: editTemplate.amount,
+        currency: editTemplate.currency,
+        description: editTemplate.description,
+        date: editTemplate.date.split('T')[0],
+        categoryId: editTemplate.categoryId,
+        isRecurring: true,
+        recurringDay: editTemplate.recurringDay,
+      }}
+      onSuccess={handleEditSuccess}
+    />
+  ) : null
 
   return (
     <div className="p-4 md:p-6 flex flex-col gap-4 max-w-2xl mx-auto w-full">
@@ -159,6 +205,19 @@ export default function MovimientosPage() {
         </div>
       )}
 
+      {type === 'expense' && !loadingTemplates && templates.length > 0 && (
+        <div className="flex flex-col gap-1">
+          <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+            {tExp('recurringConfigured')}
+          </h2>
+          <div className="rounded-xl border bg-background divide-y divide-border px-4">
+            {templates.map((tmpl) => (
+              <RecurringExpenseTemplateItem key={tmpl.id} template={tmpl} onEdit={setEditTemplate} />
+            ))}
+          </div>
+        </div>
+      )}
+
       {isLoading ? (
         <div className="flex flex-col gap-2">
           {Array.from({ length: 5 }).map((_, i) => (
@@ -170,6 +229,27 @@ export default function MovimientosPage() {
           <MovementList movements={paginated} />
           <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
         </>
+      )}
+
+      {isDesktop ? (
+        <Dialog open={!!editTemplate} onOpenChange={(v) => !v && setEditTemplate(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{tExp('editRecurring')}</DialogTitle>
+            </DialogHeader>
+            {editForm}
+          </DialogContent>
+        </Dialog>
+      ) : (
+        <Sheet open={!!editTemplate} onOpenChange={(v) => !v && setEditTemplate(null)}>
+          <SheetContent side="bottom" className="rounded-t-2xl px-4 pb-8 pt-4">
+            <SheetHeader className="mb-4">
+              <div className="mx-auto mb-3 h-1 w-9 rounded-full bg-muted" />
+              <SheetTitle>{tExp('editRecurring')}</SheetTitle>
+            </SheetHeader>
+            {editForm}
+          </SheetContent>
+        </Sheet>
       )}
     </div>
   )
