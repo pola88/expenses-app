@@ -1,9 +1,6 @@
 import { incomeRepository } from '@/repositories/income.repository'
 import { CreateIncomeInput, UpdateIncomeInput } from '@/dtos/income.dto'
-
-function daysInMonth(year: number, month: number) {
-  return new Date(year, month + 1, 0).getDate()
-}
+import { daysInMonth } from '@/lib/date'
 
 export const incomeService = {
   async list(householdId: string, filters: { from?: Date; to?: Date } = {}) {
@@ -52,21 +49,30 @@ export const incomeService = {
     const year = today.getFullYear()
     const month = today.getMonth()
 
-    for (const template of templates) {
-      const existing = await incomeRepository.findInstanceForMonth(template.id, year, month)
-      if (existing) continue
+    const existing = await incomeRepository.findInstancesForMonth(
+      templates.map((t) => t.id),
+      year,
+      month,
+    )
+    const existingIds = new Set(existing.map((i) => i.recurringSourceId))
 
-      const day = Math.min(template.recurringDay!, daysInMonth(year, month))
-      await incomeRepository.create({
-        amount: template.amount.toString(),
-        currency: template.currency,
-        description: template.description,
-        date: new Date(Date.UTC(year, month, day)),
-        isRecurring: false,
-        householdId,
-        userId: template.userId,
-        recurringSourceId: template.id,
-      })
-    }
+    const missing = templates.filter((t) => !existingIds.has(t.id))
+    if (missing.length === 0) return
+
+    await Promise.all(
+      missing.map((template) => {
+        const day = Math.min(template.recurringDay!, daysInMonth(year, month))
+        return incomeRepository.create({
+          amount: template.amount.toString(),
+          currency: template.currency,
+          description: template.description,
+          date: new Date(Date.UTC(year, month, day)),
+          isRecurring: false,
+          householdId,
+          userId: template.userId,
+          recurringSourceId: template.id,
+        })
+      }),
+    )
   },
 }

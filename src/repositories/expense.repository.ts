@@ -46,11 +46,15 @@ export const expenseRepository = {
     })
   },
 
-  findInstanceForMonth(templateId: string, year: number, month: number) {
+  findInstancesForMonth(templateIds: string[], year: number, month: number) {
     const from = new Date(Date.UTC(year, month, 1))
     const to = new Date(Date.UTC(year, month + 1, 1))
-    return prisma.expense.findFirst({
-      where: { recurringSourceId: templateId, date: { gte: from, lt: to } },
+    return prisma.expense.findMany({
+      where: {
+        recurringSourceId: { in: templateIds },
+        date: { gte: from, lt: to },
+      },
+      select: { recurringSourceId: true },
     })
   },
 
