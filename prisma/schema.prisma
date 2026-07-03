@@ -113,6 +113,10 @@ model Income {
 
   recurringSource    Income?  @relation("RecurringInstances", fields: [recurringSourceId], references: [id], onDelete: SetNull)
   recurringInstances Income[] @relation("RecurringInstances")
+
+  @@index([householdId, date])
+  @@index([householdId, isRecurring])
+  @@index([recurringSourceId])
 }
 
 model Expense {
@@ -136,6 +140,10 @@ model Expense {
 
   recurringSource    Expense?  @relation("RecurringExpenseInstances", fields: [recurringSourceId], references: [id], onDelete: SetNull)
   recurringInstances Expense[] @relation("RecurringExpenseInstances")
+
+  @@index([householdId, date])
+  @@index([householdId, isRecurring])
+  @@index([recurringSourceId])
 }
 
 model CurrencyExchange {
@@ -154,4 +162,6 @@ model CurrencyExchange {
   household   Household        @relation(fields: [householdId], references: [id])
   userId      String
   user        User             @relation(fields: [userId], references: [id])
+
+  @@index([householdId, date])
 }

@@ -1,9 +1,8 @@
 import Decimal from 'decimal.js'
+import { prisma } from '@/lib/prisma'
 import { incomeRepository } from '@/repositories/income.repository'
 import { expenseRepository } from '@/repositories/expense.repository'
 import { exchangeRepository } from '@/repositories/exchange.repository'
-import { incomeService } from '@/services/income.service'
-import { expenseService } from '@/services/expense.service'
 import type { Movement } from '@/types/movement'
 
 export type WalletBalance = { ARS: string; USD: string }
@@ -19,36 +18,54 @@ export type WalletSummary = {
 export type { Movement }
 
 export async function getWalletBalance(householdId: string): Promise<WalletBalance> {
-  await Promise.all([
-    incomeService.syncRecurringIncomes(householdId),
-    expenseService.syncRecurringExpenses(householdId),
-  ])
-
-  const [incomes, expenses, exchanges] = await Promise.all([
-    incomeRepository.findByHousehold(householdId),
-    expenseRepository.findByHousehold(householdId),
-    exchangeRepository.findByHousehold(householdId),
+  const [incomeSums, expenseSums, exchangeFromSums, exchangeToSums] = await Promise.all([
+    prisma.income.groupBy({
+      by: ['currency'],
+      where: { householdId, isRecurring: false },
+      _sum: { amount: true },
+    }),
+    prisma.expense.groupBy({
+      by: ['currency'],
+      where: { householdId, isRecurring: false },
+      _sum: { amount: true },
+    }),
+    prisma.currencyExchange.groupBy({
+      by: ['fromCurrency'],
+      where: { householdId },
+      _sum: { fromAmount: true },
+    }),
+    prisma.currencyExchange.groupBy({
+      by: ['toCurrency'],
+      where: { householdId },
+      _sum: { toAmount: true },
+    }),
   ])
 
   let ARS = new Decimal(0)
   let USD = new Decimal(0)
 
-  for (const inc of incomes) {
-    if (inc.currency === 'ARS') ARS = ARS.plus(inc.amount.toString())
-    else USD = USD.plus(inc.amount.toString())
+  for (const row of incomeSums) {
+    const sum = row._sum.amount?.toString() ?? '0'
+    if (row.currency === 'ARS') ARS = ARS.plus(sum)
+    else USD = USD.plus(sum)
   }
 
-  for (const exp of expenses) {
-    if (exp.currency === 'ARS') ARS = ARS.minus(exp.amount.toString())
-    else USD = USD.minus(exp.amount.toString())
+  for (const row of expenseSums) {
+    const sum = row._sum.amount?.toString() ?? '0'
+    if (row.currency === 'ARS') ARS = ARS.minus(sum)
+    else USD = USD.minus(sum)
   }
 
-  for (const ex of exchanges) {
-    if (ex.fromCurrency === 'ARS') ARS = ARS.minus(ex.fromAmount.toString())
-    else USD = USD.minus(ex.fromAmount.toString())
+  for (const row of exchangeFromSums) {
+    const sum = row._sum.fromAmount?.toString() ?? '0'
+    if (row.fromCurrency === 'ARS') ARS = ARS.minus(sum)
+    else USD = USD.minus(sum)
+  }
 
-    if (ex.toCurrency === 'ARS') ARS = ARS.plus(ex.toAmount.toString())
-    else USD = USD.plus(ex.toAmount.toString())
+  for (const row of exchangeToSums) {
+    const sum = row._sum.toAmount?.toString() ?? '0'
+    if (row.toCurrency === 'ARS') ARS = ARS.plus(sum)
+    else USD = USD.plus(sum)
   }
 
   return { ARS: ARS.toFixed(2), USD: USD.toFixed(2) }
