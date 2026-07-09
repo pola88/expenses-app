@@ -1,4 +1,5 @@
 import { expenseRepository, ExpenseFilters } from '@/repositories/expense.repository'
+import { categoryRepository } from '@/repositories/category.repository'
 import { CreateExpenseInput, UpdateExpenseInput } from '@/dtos/expense.dto'
 import { daysInMonth } from '@/lib/date'
 import { NotFoundError } from '@/lib/errors'
@@ -19,11 +20,17 @@ export const expenseService = {
   },
 
   async create(input: CreateExpenseInput, householdId: string, userId: string) {
+    const category = await categoryRepository.findById(input.categoryId, householdId)
+    if (!category) throw new NotFoundError('Categoría no encontrada')
     return expenseRepository.create({ ...input, householdId, userId })
   },
 
   async update(id: string, input: UpdateExpenseInput, householdId: string) {
     await this.getById(id, householdId)
+    if (input.categoryId) {
+      const category = await categoryRepository.findById(input.categoryId, householdId)
+      if (!category) throw new NotFoundError('Categoría no encontrada')
+    }
     return expenseRepository.update(id, householdId, input)
   },
 

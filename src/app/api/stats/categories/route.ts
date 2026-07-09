@@ -10,7 +10,7 @@ export const GET = apiHandler(async (req, { householdId }) => {
   const to = new Date(Date.UTC(ref.getUTCFullYear(), ref.getUTCMonth() + 1, 1))
 
   const expenses = await prisma.expense.findMany({
-    where: { householdId, date: { gte: from, lt: to } },
+    where: { householdId, isRecurring: false, date: { gte: from, lt: to } },
     select: {
       amount: true,
       currency: true,

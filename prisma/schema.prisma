@@ -92,6 +92,8 @@ model Category {
   householdId String
   household   Household @relation(fields: [householdId], references: [id])
   expenses    Expense[]
+
+  @@index([householdId])
 }
 
 model Income {

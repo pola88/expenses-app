@@ -12,7 +12,7 @@ export const GET = apiHandler(async (_, { householdId }) => {
       select: { amount: true, currency: true, date: true },
     }),
     prisma.expense.findMany({
-      where: { householdId, date: { gte: from } },
+      where: { householdId, isRecurring: false, date: { gte: from } },
       select: { amount: true, currency: true, date: true },
     }),
   ])
