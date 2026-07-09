@@ -9,8 +9,7 @@ import { apiFetch } from '@/lib/fetch'
 import { MovementItem } from '@/components/dashboard/movement-item'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Pagination } from '@/components/ui/pagination'
-
-const PAGE_SIZE = 10
+import { PAGE_SIZE } from '@/lib/constants'
 
 const fmt = (val: string) =>
   new Intl.NumberFormat('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(

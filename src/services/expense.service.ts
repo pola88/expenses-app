@@ -1,6 +1,7 @@
 import { expenseRepository, ExpenseFilters } from '@/repositories/expense.repository'
 import { CreateExpenseInput, UpdateExpenseInput } from '@/dtos/expense.dto'
 import { daysInMonth } from '@/lib/date'
+import { NotFoundError } from '@/lib/errors'
 
 export const expenseService = {
   async list(householdId: string, filters: ExpenseFilters = {}) {
@@ -13,7 +14,7 @@ export const expenseService = {
 
   async getById(id: string, householdId: string) {
     const expense = await expenseRepository.findById(id, householdId)
-    if (!expense) throw new Error('Gasto no encontrado')
+    if (!expense) throw new NotFoundError('Gasto no encontrado')
     return expense
   },
 

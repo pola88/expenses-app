@@ -17,8 +17,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { parseMonthParam, monthBounds } from '@/lib/month'
 import { toast } from 'sonner'
-
-const PAGE_SIZE = 10
+import { PAGE_SIZE } from '@/lib/constants'
 
 const fmt = (val: string) =>
   new Intl.NumberFormat('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(

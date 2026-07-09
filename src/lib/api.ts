@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { ZodError } from 'zod'
 import { auth } from '@/lib/auth'
+import { NotFoundError } from '@/lib/errors'
 
 export function ok<T>(data: T, status = 200) {
   return NextResponse.json(data, { status })
@@ -38,10 +39,7 @@ export function apiHandler(
       })
     } catch (e) {
       if (e instanceof ZodError) return validationError(e)
-
-      const message = e instanceof Error ? e.message : 'Error interno'
-
-      if (message.includes('no encontrado')) return err(message, 404)
+      if (e instanceof NotFoundError) return err(e.message, 404)
 
       console.error('[API Error]', e)
       return err('Error interno del servidor', 500)

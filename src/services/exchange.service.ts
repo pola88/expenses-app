@@ -1,5 +1,6 @@
 import { exchangeRepository } from '@/repositories/exchange.repository'
 import { CreateExchangeInput } from '@/dtos/exchange.dto'
+import { NotFoundError } from '@/lib/errors'
 
 export const exchangeService = {
   async list(householdId: string, filters: { from?: Date; to?: Date } = {}) {
@@ -8,7 +9,7 @@ export const exchangeService = {
 
   async getById(id: string, householdId: string) {
     const exchange = await exchangeRepository.findById(id, householdId)
-    if (!exchange) throw new Error('Cambio no encontrado')
+    if (!exchange) throw new NotFoundError('Cambio no encontrado')
     return exchange
   },
 

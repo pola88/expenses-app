@@ -1,6 +1,7 @@
 import { incomeRepository } from '@/repositories/income.repository'
 import { CreateIncomeInput, UpdateIncomeInput } from '@/dtos/income.dto'
 import { daysInMonth } from '@/lib/date'
+import { NotFoundError } from '@/lib/errors'
 
 export const incomeService = {
   async list(householdId: string, filters: { from?: Date; to?: Date } = {}) {
@@ -13,7 +14,7 @@ export const incomeService = {
 
   async getById(id: string, householdId: string) {
     const income = await incomeRepository.findById(id, householdId)
-    if (!income) throw new Error('Ingreso no encontrado')
+    if (!income) throw new NotFoundError('Ingreso no encontrado')
     return income
   },
 
