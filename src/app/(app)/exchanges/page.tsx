@@ -10,11 +10,7 @@ import { MovementItem } from '@/components/dashboard/movement-item'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Pagination } from '@/components/ui/pagination'
 import { PAGE_SIZE } from '@/lib/constants'
-
-const fmt = (val: string) =>
-  new Intl.NumberFormat('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(
-    parseFloat(val),
-  )
+import { formatAmount } from '@/lib/money'
 
 export default function CambiosPage() {
   const t = useTranslations('exchanges')
@@ -58,11 +54,11 @@ export default function CambiosPage() {
         <div className="grid grid-cols-2 gap-3">
           <div className="rounded-xl border border-blue-100 bg-blue-50 p-4">
             <span className="text-xs font-semibold tracking-wide text-blue-600">USD$</span>
-            <p className="mt-1 text-xl font-bold tabular-nums text-blue-900">{fmt(totals.USD)}</p>
+            <p className="mt-1 text-xl font-bold tabular-nums text-blue-900">{formatAmount(totals.USD)}</p>
           </div>
           <div className="rounded-xl border border-green-100 bg-green-50 p-4">
             <span className="text-xs font-semibold tracking-wide text-green-600">ARS$</span>
-            <p className="mt-1 text-xl font-bold tabular-nums text-green-900">{fmt(totals.ARS)}</p>
+            <p className="mt-1 text-xl font-bold tabular-nums text-green-900">{formatAmount(totals.ARS)}</p>
           </div>
         </div>
       )}

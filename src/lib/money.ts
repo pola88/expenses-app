@@ -1,17 +1,19 @@
-export function formatMoney(amount: string | number, currency: 'ARS' | 'USD'): string {
-  const num = typeof amount === 'string' ? parseFloat(amount) : amount
-  const prefix = currency === 'ARS' ? 'ARS$' : 'USD$'
+import Decimal from 'decimal.js'
 
-  return `${prefix} ${new Intl.NumberFormat('es-AR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(num)}`
+const esAR = new Intl.NumberFormat('es-AR', {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+})
+
+export function formatAmount(amount: string | number | Decimal): string {
+  return esAR.format(new Decimal(amount.toString()).toNumber())
 }
 
-export function formatRate(rate: string | number): string {
-  const num = typeof rate === 'string' ? parseFloat(rate) : rate
-  return new Intl.NumberFormat('es-AR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(num)
+export function formatMoney(amount: string | number | Decimal, currency: 'ARS' | 'USD'): string {
+  const prefix = currency === 'ARS' ? 'ARS$' : 'USD$'
+  return `${prefix} ${formatAmount(amount)}`
+}
+
+export function formatRate(rate: string | number | Decimal): string {
+  return esAR.format(new Decimal(rate.toString()).toNumber())
 }

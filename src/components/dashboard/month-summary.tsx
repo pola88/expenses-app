@@ -6,11 +6,7 @@ import { useSearchParams } from 'next/navigation'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { WalletSummary } from '@/services/wallet.service'
 import { apiFetch } from '@/lib/fetch'
-
-const fmt = (val: string) =>
-  new Intl.NumberFormat('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(
-    parseFloat(val),
-  )
+import { formatAmount } from '@/lib/money'
 
 type Props = { householdId: string }
 
@@ -45,11 +41,11 @@ export function MonthSummary({ householdId }: Props) {
         <div className="flex flex-col gap-1">
           <div className="flex items-center justify-between">
             <span className="rounded px-1.5 py-0.5 text-[10px] font-medium bg-blue-50 text-blue-800">USD$</span>
-            <span className="text-sm font-semibold tabular-nums">{fmt(incomes.USD)}</span>
+            <span className="text-sm font-semibold tabular-nums">{formatAmount(incomes.USD)}</span>
           </div>
           <div className="flex items-center justify-between">
             <span className="rounded px-1.5 py-0.5 text-[10px] font-medium bg-green-50 text-green-800">ARS$</span>
-            <span className="text-sm font-semibold tabular-nums">{fmt(incomes.ARS)}</span>
+            <span className="text-sm font-semibold tabular-nums">{formatAmount(incomes.ARS)}</span>
           </div>
         </div>
       </div>
@@ -59,11 +55,11 @@ export function MonthSummary({ householdId }: Props) {
         <div className="flex flex-col gap-1">
           <div className="flex items-center justify-between">
             <span className="rounded px-1.5 py-0.5 text-[10px] font-medium bg-blue-50 text-blue-800">USD$</span>
-            <span className="text-sm font-semibold tabular-nums">{fmt(expenses.USD)}</span>
+            <span className="text-sm font-semibold tabular-nums">{formatAmount(expenses.USD)}</span>
           </div>
           <div className="flex items-center justify-between">
             <span className="rounded px-1.5 py-0.5 text-[10px] font-medium bg-green-50 text-green-800">ARS$</span>
-            <span className="text-sm font-semibold tabular-nums">{fmt(expenses.ARS)}</span>
+            <span className="text-sm font-semibold tabular-nums">{formatAmount(expenses.ARS)}</span>
           </div>
         </div>
       </div>
