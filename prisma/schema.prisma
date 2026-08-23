@@ -179,6 +179,9 @@ model TelegramLink {
   telegramChatId String   @unique
   createdAt      DateTime @default(now())
 
+  lastMovementType String? // "expense" | "income"
+  lastMovementId   String?
+
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 

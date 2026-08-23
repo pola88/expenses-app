@@ -14,5 +14,18 @@ export async function handleStart(chatId: string, args: string) {
     return
   }
 
-  await sendMessage(chatId, '¡Listo! Tu cuenta quedó vinculada.\n\nProbá:\n/categorias\n/gasto 500 comida')
+  await sendMessage(
+    chatId,
+    [
+      '¡Listo! Tu cuenta quedó vinculada.',
+      '',
+      'Comandos disponibles:',
+      '/gasto <monto> <categoría> [descripción]',
+      '/ingreso <monto> <descripción>',
+      '/saldo — ver balance actual',
+      '/resumen — resumen del mes',
+      '/categorias — ver categorías',
+      '/deshacer — borrar el último movimiento cargado',
+    ].join('\n'),
+  )
 }

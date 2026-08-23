@@ -1,6 +1,7 @@
 import { TelegramLink } from '@prisma/client'
 import { categoryRepository } from '@/repositories/category.repository'
 import { expenseService } from '@/services/expense.service'
+import { telegramLinkService } from '@/services/telegram-link.service'
 import { createExpenseSchema } from '@/dtos/expense.dto'
 import { formatMoney } from '@/lib/money'
 import { sendMessage } from '../client'
@@ -42,10 +43,11 @@ export async function handleGasto(link: TelegramLink, args: string) {
     isRecurring: false,
   })
 
-  await expenseService.create(input, link.householdId, link.userId)
+  const expense = await expenseService.create(input, link.householdId, link.userId)
+  await telegramLinkService.markLastMovement(link.userId, 'expense', expense.id)
 
   await sendMessage(
     chatId,
-    `✅ Gasto registrado: ${category.icon} ${category.name} — ${formatMoney(amount, 'ARS')}${description ? ` (${description})` : ''}`,
+    `✅ Gasto registrado: ${category.icon} ${category.name} — ${formatMoney(amount, 'ARS')}${description ? ` (${description})` : ''}\n\n¿Te equivocaste? Enviá /deshacer`,
   )
 }

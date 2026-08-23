@@ -98,6 +98,43 @@ export async function getWalletSummary(householdId: string, month: Date): Promis
   }
 }
 
+export type CategoryBreakdown = {
+  id: string; name: string; icon: string; color: string; ARS: string; USD: string
+}
+
+export async function getCategoryBreakdown(householdId: string, month: Date): Promise<CategoryBreakdown[]> {
+  const y = month.getUTCFullYear()
+  const mo = month.getUTCMonth()
+  const from = new Date(Date.UTC(y, mo, 1))
+  const to = new Date(Date.UTC(y, mo + 1, 1))
+
+  const expenses = await prisma.expense.findMany({
+    where: { householdId, isRecurring: false, date: { gte: from, lt: to } },
+    select: {
+      amount: true,
+      currency: true,
+      category: { select: { id: true, name: true, icon: true, color: true } },
+    },
+  })
+
+  const grouped: Record<string, {
+    name: string; icon: string; color: string
+    ARS: Decimal; USD: Decimal
+  }> = {}
+
+  for (const exp of expenses) {
+    const { id, name, icon, color } = exp.category
+    if (!grouped[id]) grouped[id] = { name, icon, color, ARS: new Decimal(0), USD: new Decimal(0) }
+    grouped[id][exp.currency] = grouped[id][exp.currency].plus(exp.amount.toString())
+  }
+
+  return Object.entries(grouped).map(([id, { name, icon, color, ARS, USD }]) => ({
+    id, name, icon, color,
+    ARS: ARS.toFixed(2),
+    USD: USD.toFixed(2),
+  }))
+}
+
 export async function getRecentMovements(
   householdId: string,
   limit = 10,

@@ -20,6 +20,20 @@ export const telegramLinkRepository = {
     })
   },
 
+  setLastMovement(userId: string, type: 'expense' | 'income', id: string) {
+    return prisma.telegramLink.update({
+      where: { userId },
+      data: { lastMovementType: type, lastMovementId: id },
+    })
+  },
+
+  clearLastMovement(userId: string) {
+    return prisma.telegramLink.update({
+      where: { userId },
+      data: { lastMovementType: null, lastMovementId: null },
+    })
+  },
+
   createLinkCode(userId: string) {
     const code = randomBytes(16).toString('hex')
     return prisma.telegramLinkCode.create({
