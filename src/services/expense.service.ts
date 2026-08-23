@@ -22,7 +22,7 @@ export const expenseService = {
   async create(input: CreateExpenseInput, householdId: string, userId: string) {
     const category = await categoryRepository.findById(input.categoryId, householdId)
     if (!category) throw new NotFoundError('Categoría no encontrada')
-    return expenseRepository.create({ ...input, householdId, userId })
+    return expenseRepository.create({ ...input, description: input.description ?? '', householdId, userId })
   },
 
   async update(id: string, input: UpdateExpenseInput, householdId: string) {

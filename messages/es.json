@@ -157,6 +157,19 @@
     "categoriesDescription": "Creá y editá las categorías de gastos del household",
     "householdLabel": "Household",
     "householdDescription": "Miembros y código de invitación",
+    "telegramLabel": "Telegram",
+    "telegramDescription": "Cargá gastos por chat",
+    "telegram": {
+      "title": "Telegram",
+      "linkedTitle": "Cuenta vinculada",
+      "linkedDescription": "Ya podés cargar gastos escribiéndole al bot",
+      "notLinkedDescription": "Vinculá tu cuenta de Telegram para cargar gastos por chat sin abrir la app.",
+      "generateCode": "Generar código",
+      "generating": "Generando...",
+      "openInTelegram": "Abrir en Telegram",
+      "expiresIn": "Vence en {minutes} minutos",
+      "checkStatus": "Ya vinculé, actualizar"
+    },
     "categories": {
       "title": "Categorías",
       "new": "Nueva",

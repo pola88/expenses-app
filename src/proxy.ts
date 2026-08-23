@@ -1,22 +1,8 @@
 import { auth } from '@/lib/auth'
 import { NextResponse } from 'next/server'
+import { createRateLimiter } from '@/lib/rate-limit'
 
-// In-memory rate limiter: works per-process, adequate for a personal household app.
-// For Vercel multi-region deployments, replace with @upstash/ratelimit.
-const attempts = new Map<string, { count: number; resetAt: number }>()
-const WINDOW_MS = 60_000
-const MAX_ATTEMPTS = 10
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now()
-  const entry = attempts.get(ip)
-  if (!entry || now > entry.resetAt) {
-    attempts.set(ip, { count: 1, resetAt: now + WINDOW_MS })
-    return false
-  }
-  entry.count++
-  return entry.count > MAX_ATTEMPTS
-}
+const isRateLimited = createRateLimiter(60_000, 10)
 
 const RATE_LIMITED_PATHS = ['/api/auth/register', '/api/auth/signin']
 

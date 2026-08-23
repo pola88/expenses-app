@@ -56,6 +56,8 @@ model Household {
   incomes    Income[]
   expenses   Expense[]
   exchanges  CurrencyExchange[]
+
+  telegramLinks TelegramLink[]
 }
 
 model User {
@@ -75,6 +77,8 @@ model User {
   incomes   Income[]
   expenses  Expense[]
   exchanges CurrencyExchange[]
+
+  telegramLink TelegramLink?
 }
 
 enum Currency {
@@ -166,4 +170,29 @@ model CurrencyExchange {
   user        User             @relation(fields: [userId], references: [id])
 
   @@index([householdId, date])
+}
+
+// ─── Telegram bot ──────────────────────────────────
+
+model TelegramLink {
+  id             String   @id @default(cuid())
+  telegramChatId String   @unique
+  createdAt      DateTime @default(now())
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  householdId String
+  household   Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+
+  @@index([householdId])
+}
+
+model TelegramLinkCode {
+  code      String   @id
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
 }

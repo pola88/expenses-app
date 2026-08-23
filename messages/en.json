@@ -157,6 +157,19 @@
     "categoriesDescription": "Create and edit expense categories for the household",
     "householdLabel": "Household",
     "householdDescription": "Members and invitation code",
+    "telegramLabel": "Telegram",
+    "telegramDescription": "Log expenses via chat",
+    "telegram": {
+      "title": "Telegram",
+      "linkedTitle": "Account linked",
+      "linkedDescription": "You can now log expenses by messaging the bot",
+      "notLinkedDescription": "Link your Telegram account to log expenses via chat without opening the app.",
+      "generateCode": "Generate code",
+      "generating": "Generating...",
+      "openInTelegram": "Open in Telegram",
+      "expiresIn": "Expires in {minutes} minutes",
+      "checkStatus": "I linked it, refresh"
+    },
     "categories": {
       "title": "Categories",
       "new": "New",

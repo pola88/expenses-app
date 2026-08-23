@@ -3,7 +3,7 @@ import { z } from 'zod'
 const baseExpenseSchema = z.object({
   amount: z.string().regex(/^\d+(\.\d{1,2})?$/, 'Monto inválido'),
   currency: z.enum(['ARS', 'USD']),
-  description: z.string().min(1).max(200),
+  description: z.string().max(200).optional(),
   date: z.coerce.date(),
   categoryId: z.string().cuid(),
   isRecurring: z.boolean().default(false),

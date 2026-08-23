@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
-import { Tag, Users, ChevronRight } from 'lucide-react'
+import { Tag, Users, Send, ChevronRight } from 'lucide-react'
 import { requireHousehold } from '@/lib/session'
 import { LogoutButton } from '@/components/auth/logout-button'
 
@@ -30,6 +30,12 @@ export default async function SettingsPage() {
       icon: Users,
       label: t('householdLabel'),
       description: t('householdDescription'),
+    },
+    {
+      href: '/settings/telegram',
+      icon: Send,
+      label: t('telegramLabel'),
+      description: t('telegramDescription'),
     },
   ]
 

@@ -135,6 +135,7 @@ export function ExpenseForm({ onSuccess, editId, initialValues }: Props) {
       <div className="flex flex-col gap-1">
         <Label>{t('description')} <span className="text-muted-foreground">{tCommon('optional')}</span></Label>
         <Input {...register('description')} placeholder={t('descriptionPlaceholder')} />
+        {errors.description && <p className="text-xs text-destructive">{errors.description.message}</p>}
       </div>
 
       <div className="flex flex-col gap-1">
