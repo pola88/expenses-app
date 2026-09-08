@@ -12,6 +12,8 @@ export type WalletSummary = {
   month: {
     incomes: WalletBalance
     expenses: WalletBalance
+    exchanges: WalletBalance
+    net: WalletBalance
   }
 }
 
@@ -77,10 +79,11 @@ export async function getWalletSummary(householdId: string, month: Date): Promis
   const from = new Date(Date.UTC(y, mo, 1))
   const to = new Date(Date.UTC(y, mo + 1, 0, 23, 59, 59, 999))
 
-  const [balance, monthIncomes, monthExpenses] = await Promise.all([
+  const [balance, monthIncomes, monthExpenses, monthExchanges] = await Promise.all([
     getWalletBalance(householdId),
     incomeRepository.findByHousehold(householdId, { from, to }),
     expenseRepository.findByHousehold(householdId, { from, to }),
+    exchangeRepository.findByHousehold(householdId, { from, to }),
   ])
 
   const sum = (items: { currency: string; amount: { toString(): string } }[], currency: string) =>
@@ -89,11 +92,30 @@ export async function getWalletSummary(householdId: string, month: Date): Promis
       .reduce((acc, i) => acc.plus(i.amount.toString()), new Decimal(0))
       .toFixed(2)
 
+  const incomes = { ARS: sum(monthIncomes, 'ARS'), USD: sum(monthIncomes, 'USD') }
+  const expenses = { ARS: sum(monthExpenses, 'ARS'), USD: sum(monthExpenses, 'USD') }
+
+  // Efecto neto de los cambios sobre cada moneda: lo que salió (−) y lo que entró (+)
+  let exchangeARS = new Decimal(0)
+  let exchangeUSD = new Decimal(0)
+  for (const ex of monthExchanges) {
+    if (ex.fromCurrency === 'ARS') exchangeARS = exchangeARS.minus(ex.fromAmount.toString())
+    else exchangeUSD = exchangeUSD.minus(ex.fromAmount.toString())
+    if (ex.toCurrency === 'ARS') exchangeARS = exchangeARS.plus(ex.toAmount.toString())
+    else exchangeUSD = exchangeUSD.plus(ex.toAmount.toString())
+  }
+  const exchanges = { ARS: exchangeARS.toFixed(2), USD: exchangeUSD.toFixed(2) }
+
   return {
     balance,
     month: {
-      incomes: { ARS: sum(monthIncomes, 'ARS'), USD: sum(monthIncomes, 'USD') },
-      expenses: { ARS: sum(monthExpenses, 'ARS'), USD: sum(monthExpenses, 'USD') },
+      incomes,
+      expenses,
+      exchanges,
+      net: {
+        ARS: new Decimal(incomes.ARS).minus(expenses.ARS).plus(exchanges.ARS).toFixed(2),
+        USD: new Decimal(incomes.USD).minus(expenses.USD).plus(exchanges.USD).toFixed(2),
+      },
     },
   }
 }

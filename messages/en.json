@@ -71,6 +71,11 @@
     "noMovements": "No movements yet.",
     "noMovementsCta": "Add the first one with the + button",
     "monthSummary": {
+      "net": "This month's movement",
+      "result": "Result",
+      "incomeRow": "Income",
+      "expenseRow": "Expenses",
+      "exchangeRow": "Exchanges",
       "incomes": "Income ↑",
       "expenses": "Expenses ↓"
     },

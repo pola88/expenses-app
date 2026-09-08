@@ -17,6 +17,8 @@ export async function handleResumen(link: TelegramLink) {
     '',
     `Ingresos: ${formatMoney(summary.month.incomes.ARS, 'ARS')} · ${formatMoney(summary.month.incomes.USD, 'USD')}`,
     `Gastos: ${formatMoney(summary.month.expenses.ARS, 'ARS')} · ${formatMoney(summary.month.expenses.USD, 'USD')}`,
+    `Cambios: ${formatMoney(summary.month.exchanges.ARS, 'ARS')} · ${formatMoney(summary.month.exchanges.USD, 'USD')}`,
+    `Resultado: ${formatMoney(summary.month.net.ARS, 'ARS')} · ${formatMoney(summary.month.net.USD, 'USD')}`,
   ]
 
   const withSpend = breakdown.filter((c) => c.ARS !== '0.00' || c.USD !== '0.00')

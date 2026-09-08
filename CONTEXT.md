@@ -239,6 +239,7 @@ src/
 27. **Totales en /exchanges** — cards ARS/USD con volumen total cambiado de cada moneda
 28. **Paginado** — componente `Pagination` reutilizable (chevrons, touch-friendly); aplicado en /exchanges y /transactions
 29. **Gastos recurrentes** — mismo patrón template/instancia que ingresos: `isRecurring`, `recurringDay`, `recurringActive`, `recurringSourceId` en `Expense`. Auto-sync en `getWalletBalance`. Templates visibles y editables en /transactions cuando filtro es "Gasto"
+30. **Movimiento del mes** — `WalletSummary.month.exchanges` (efecto neto de los cambios sobre cada moneda) + `month.net` (`ingresos − gastos + cambios` por moneda). Muestra cuánto varió el saldo de cada moneda ese mes contando exchanges. Statement por moneda (Ingresos/Gastos/Cambios/Resultado) en `month-summary.tsx` y líneas "Cambios"/"Resultado" en el `/resumen` de Telegram. Sin comisión de exchange (usa `fromAmount`/`toAmount` directo, igual que `getWalletBalance`)
 
 ---
 
