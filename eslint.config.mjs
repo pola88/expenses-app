@@ -1,6 +1,7 @@
 import js from '@eslint/js'
 import tseslint from 'typescript-eslint'
 import reactHooks from 'eslint-plugin-react-hooks'
+import prettier from 'eslint-config-prettier'
 
 export default tseslint.config(
   js.configs.recommended,
@@ -14,6 +15,7 @@ export default tseslint.config(
       'react-hooks/incompatible-library': 'off',
     },
   },
+  prettier,
   {
     ignores: ['.next/', 'node_modules/', 'prisma/'],
   }
