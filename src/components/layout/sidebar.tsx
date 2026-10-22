@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Home, List, Wallet, ArrowLeftRight, Settings, ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
-// import { WalletBadge } from '@/components/wallet/wallet-badge';
 // import { LanguageToggle } from '@/components/language-toggle';
 import {
   DropdownMenu,
@@ -86,7 +85,6 @@ export function Sidebar({ user }: Props) {
       ))}
 
       <div className="mt-auto flex flex-col gap-2 border-t border-border pt-4">
-        {/* <WalletBadge householdId={user.householdId} /> */}
         {/* <div className="flex justify-end">
           <LanguageToggle />
         </div> */}
