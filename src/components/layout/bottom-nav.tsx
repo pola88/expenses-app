@@ -6,8 +6,10 @@ import { useTranslations } from 'next-intl';
 import { Home, List, Wallet, Settings, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { LanguageToggle } from '@/components/language-toggle';
+import { useQuickAdd } from '../quick-add/quick-add-provider';
 
-export function BottomNav({ onQuickAdd }: { onQuickAdd: () => void }) {
+export function BottomNav() {
+  const { setOpen } = useQuickAdd();
   const pathname = usePathname();
   const t = useTranslations('nav');
   const isActive = (href: string) => (href === '/' ? pathname === '/' : pathname.startsWith(href));
@@ -28,7 +30,7 @@ export function BottomNav({ onQuickAdd }: { onQuickAdd: () => void }) {
             return (
               <button
                 key="fab"
-                onClick={onQuickAdd}
+                onClick={() => setOpen(true)}
                 className="mx-auto flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-foreground text-background"
                 aria-label={t('addMovement')}
               >

@@ -9,6 +9,8 @@ import { MonthNavigator } from '@/components/ui/month-navigator';
 import { parseMonthParam, monthBounds } from '@/lib/month';
 import { Suspense } from 'react';
 import { CurrencySwitch } from '@/components/dashboard/currency-switch';
+import { CurrencyProvider } from '@/components/currency-provider';
+import { AddButton } from '@/components/dashboard/add-button';
 
 type Props = { searchParams: Promise<{ month?: string }> };
 
@@ -29,10 +31,11 @@ export default async function DashboardPage({ searchParams }: Props) {
 
   return (
     <div className="flex w-full flex-col gap-6 p-4 md:p-6">
-      <section>
+      <section className="flex items-center justify-between">
         <Suspense>
           <MonthNavigator />
         </Suspense>
+        <AddButton />
       </section>
       <section className="flex flex-col divide-y rounded-xl border bg-card lg:flex-row lg:divide-x lg:divide-y-0">
         <BalanceCard currency="USD" householdId={householdId} initialData={summary} />
@@ -40,25 +43,22 @@ export default async function DashboardPage({ searchParams }: Props) {
       </section>
 
       <section>
-        <div className="justify-content flex pb-4">
-          <h2 className="mb-3 flex-1 text-xs font-semibold tracking-widest text-muted-foreground uppercase">
-            {t('analysis')}
-          </h2>
-          <CurrencySwitch />
-        </div>
+        <CurrencyProvider>
+          <div className="justify-content flex pb-4">
+            <h2 className="mb-3 flex-1 text-base font-semibold tracking-widest">{t('analysis')}</h2>
+            <CurrencySwitch />
+          </div>
 
-        <div className="flex flex-col gap-4 lg:flex-row">
-          <Suspense>
-            <ExpensesByCategory />
-          </Suspense>
-          <MonthlyEvolution />
-        </div>
+          <div className="flex flex-col gap-4 lg:flex-row">
+            <Suspense>
+              <ExpensesByCategory />
+            </Suspense>
+            <MonthlyEvolution />
+          </div>
+        </CurrencyProvider>
       </section>
 
       <section>
-        <h2 className="mb-3 text-xs font-semibold tracking-widest text-muted-foreground uppercase">
-          {t('lastMovements')}
-        </h2>
         <MovementList movements={movements} />
       </section>
     </div>

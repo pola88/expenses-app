@@ -3,7 +3,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'sonner';
 import { useState } from 'react';
-import { CurrencyProvider } from '@/components/currency-provider';
+import { QuickAddProvider } from './quick-add/quick-add-provider';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -11,7 +11,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   );
   return (
     <QueryClientProvider client={queryClient}>
-      <CurrencyProvider>{children}</CurrencyProvider>
+      <QuickAddProvider>{children}</QuickAddProvider>
       <Toaster position="top-center" richColors />
     </QueryClientProvider>
   );

@@ -11,8 +11,7 @@ import { ExpenseForm } from './expense-form';
 import { IncomeForm } from './income-form';
 import { ExchangeForm } from './exchange-form';
 import { toast } from 'sonner';
-
-type Props = { open: boolean; onOpenChange: (v: boolean) => void };
+import { useQuickAdd } from './quick-add-provider';
 
 function QuickAddTabs({ onSuccess }: { onSuccess: (label: string) => void }) {
   const t = useTranslations('quickAdd');
@@ -44,7 +43,8 @@ function QuickAddTabs({ onSuccess }: { onSuccess: (label: string) => void }) {
   );
 }
 
-export function QuickAddSheet({ open, onOpenChange }: Props) {
+export function QuickAddSheet() {
+  const { open, setOpen } = useQuickAdd();
   const t = useTranslations('quickAdd');
   const router = useRouter();
   const qc = useQueryClient();
@@ -60,7 +60,7 @@ export function QuickAddSheet({ open, onOpenChange }: Props) {
   }, []);
 
   const handleSuccess = (label: string) => {
-    onOpenChange(false);
+    setOpen(false);
     toast.success(label);
     qc.invalidateQueries({ queryKey: ['wallet'] });
     qc.invalidateQueries({ queryKey: ['expenses'] });
@@ -71,7 +71,7 @@ export function QuickAddSheet({ open, onOpenChange }: Props) {
 
   if (isDesktop) {
     return (
-      <Dialog open={open} onOpenChange={onOpenChange}>
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t('title')}</DialogTitle>
@@ -83,7 +83,7 @@ export function QuickAddSheet({ open, onOpenChange }: Props) {
   }
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetContent side="bottom" className="rounded-t-2xl px-4 pt-4 pb-8">
         <SheetHeader className="mb-4">
           <div className="mx-auto mb-3 h-1 w-9 rounded-full bg-muted" />

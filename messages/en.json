@@ -26,8 +26,7 @@
     "addMovement": "Add movement",
     "actions": "Actions",
     "principal": "Main",
-    "system": "System",
-    "add": "Add"
+    "system": "System"
   },
   "auth": {
     "login": {
@@ -113,7 +112,8 @@
       "title": "Monthly income",
       "registered": "{description} registered",
       "error": "Could not register income"
-    }
+    },
+    "add": "Add movement"
   },
   "wallet": {
     "title": "Wallet"

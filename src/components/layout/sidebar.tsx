@@ -3,11 +3,10 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Home, List, Wallet, ArrowLeftRight, Settings, Plus, ChevronUp } from 'lucide-react';
+import { Home, List, Wallet, ArrowLeftRight, Settings, ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { WalletBadge } from '@/components/wallet/wallet-badge';
-import { LanguageToggle } from '@/components/language-toggle';
-import { Button } from '@/components/ui/button';
+// import { WalletBadge } from '@/components/wallet/wallet-badge';
+// import { LanguageToggle } from '@/components/language-toggle';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +19,6 @@ import { LogOut } from 'lucide-react';
 
 type Props = {
   user: { name: string; email: string; householdId: string };
-  onQuickAdd: () => void;
 };
 
 function initials(name: string) {
@@ -32,7 +30,7 @@ function initials(name: string) {
     .toUpperCase();
 }
 
-export function Sidebar({ user, onQuickAdd }: Props) {
+export function Sidebar({ user }: Props) {
   const pathname = usePathname();
   const t = useTranslations('nav');
   const isActive = (href: string) => (href === '/' ? pathname === '/' : pathname.startsWith(href));
@@ -52,10 +50,6 @@ export function Sidebar({ user, onQuickAdd }: Props) {
         <Wallet className="h-5 w-5 text-muted-foreground" />
         <span className="text-sm font-medium">Gastos</span>
       </div>
-
-      <Button onClick={onQuickAdd} className="mb-2 w-full justify-start gap-2" size="sm">
-        <Plus className="h-4 w-4" /> {t('add')}
-      </Button>
 
       <p className="px-2 pt-2 pb-1 text-[10px] font-medium tracking-widest text-muted-foreground uppercase">
         {t('principal')}
@@ -92,10 +86,10 @@ export function Sidebar({ user, onQuickAdd }: Props) {
       ))}
 
       <div className="mt-auto flex flex-col gap-2 border-t border-border pt-4">
-        <WalletBadge householdId={user.householdId} />
-        <div className="flex justify-end">
+        {/* <WalletBadge householdId={user.householdId} /> */}
+        {/* <div className="flex justify-end">
           <LanguageToggle />
-        </div>
+        </div> */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm text-muted-foreground transition-colors hover:bg-background hover:text-foreground">
