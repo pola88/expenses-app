@@ -8,6 +8,7 @@ import { MonthlyEvolution } from '@/components/dashboard/monthly-evolution';
 import { MonthNavigator } from '@/components/ui/month-navigator';
 import { parseMonthParam, monthBounds } from '@/lib/month';
 import { Suspense } from 'react';
+import { CurrencySwitch } from '@/components/dashboard/currency-switch';
 
 type Props = { searchParams: Promise<{ month?: string }> };
 
@@ -33,22 +34,25 @@ export default async function DashboardPage({ searchParams }: Props) {
           <MonthNavigator />
         </Suspense>
       </section>
-      <section className="flex flex-col divide-y rounded-xl border bg-white lg:flex-row lg:divide-x lg:divide-y-0">
+      <section className="flex flex-col divide-y rounded-xl border bg-card lg:flex-row lg:divide-x lg:divide-y-0">
         <BalanceCard currency="USD" householdId={householdId} initialData={summary} />
         <BalanceCard currency="ARS" householdId={householdId} initialData={summary} />
       </section>
 
-      <section className="flex flex-col gap-4">
-        <Suspense>
-          <ExpensesByCategory />
-        </Suspense>
-      </section>
-
       <section>
-        <h2 className="mb-3 text-xs font-semibold tracking-widest text-muted-foreground uppercase">
-          {t('analysis')}
-        </h2>
-        <MonthlyEvolution />
+        <div className="justify-content flex pb-4">
+          <h2 className="mb-3 flex-1 text-xs font-semibold tracking-widest text-muted-foreground uppercase">
+            {t('analysis')}
+          </h2>
+          <CurrencySwitch />
+        </div>
+
+        <div className="flex flex-col gap-4 lg:flex-row">
+          <Suspense>
+            <ExpensesByCategory />
+          </Suspense>
+          <MonthlyEvolution />
+        </div>
       </section>
 
       <section>
