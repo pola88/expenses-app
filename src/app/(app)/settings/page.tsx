@@ -1,22 +1,19 @@
-import Link from 'next/link'
-import { getTranslations } from 'next-intl/server'
-import { Tag, Users, Send, ChevronRight } from 'lucide-react'
-import { requireHousehold } from '@/lib/session'
-import { LogoutButton } from '@/components/auth/logout-button'
+import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
+import { Tag, Users, Send, ChevronRight } from 'lucide-react';
+import { requireHousehold } from '@/lib/session';
+import { LogoutButton } from '@/components/auth/logout-button';
 
 export default async function SettingsPage() {
-  const [session, t] = await Promise.all([
-    requireHousehold(),
-    getTranslations('settings'),
-  ])
+  const [session, t] = await Promise.all([requireHousehold(), getTranslations('settings')]);
 
-  const { name, email } = session.user
+  const { name, email } = session.user;
   const ini = (name || email || '?')
     .split(' ')
     .slice(0, 2)
     .map((w: string) => w[0])
     .join('')
-    .toUpperCase()
+    .toUpperCase();
 
   const items = [
     {
@@ -37,11 +34,11 @@ export default async function SettingsPage() {
       label: t('telegramLabel'),
       description: t('telegramDescription'),
     },
-  ]
+  ];
 
   return (
-    <div className="p-4 md:p-6 flex flex-col gap-4 max-w-2xl mx-auto w-full">
-      <h1 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 p-4 md:p-6">
+      <h1 className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">
         {t('title')}
       </h1>
 
@@ -65,7 +62,7 @@ export default async function SettingsPage() {
       </div>
 
       <div className="flex flex-col gap-2 pt-2">
-        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground px-1">
+        <p className="px-1 text-xs font-semibold tracking-widest text-muted-foreground uppercase">
           {t('accountLabel')}
         </p>
         <div className="flex items-center gap-3 rounded-xl border border-border bg-background px-4 py-4">
@@ -73,12 +70,12 @@ export default async function SettingsPage() {
             {ini}
           </div>
           <div className="flex min-w-0 flex-col gap-0.5">
-            <span className="text-sm font-medium truncate">{name ?? ''}</span>
-            <span className="text-xs text-muted-foreground truncate">{email ?? ''}</span>
+            <span className="truncate text-sm font-medium">{name ?? ''}</span>
+            <span className="truncate text-xs text-muted-foreground">{email ?? ''}</span>
           </div>
         </div>
         <LogoutButton className="rounded-xl border border-border bg-background px-4 py-4 hover:bg-muted/50" />
       </div>
     </div>
-  )
+  );
 }

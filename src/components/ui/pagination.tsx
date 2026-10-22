@@ -1,19 +1,19 @@
-'use client'
+'use client';
 
-import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { useTranslations } from 'next-intl'
-import { Button } from '@/components/ui/button'
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { Button } from '@/components/ui/button';
 
 interface PaginationProps {
-  page: number
-  totalPages: number
-  onPageChange: (page: number) => void
+  page: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
 }
 
 export function Pagination({ page, totalPages, onPageChange }: PaginationProps) {
-  const t = useTranslations('common')
+  const t = useTranslations('common');
 
-  if (totalPages <= 1) return null
+  if (totalPages <= 1) return null;
 
   return (
     <div className="flex items-center justify-between">
@@ -27,7 +27,7 @@ export function Pagination({ page, totalPages, onPageChange }: PaginationProps) 
       >
         <ChevronLeft className="h-4 w-4" />
       </Button>
-      <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+      <span className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">
         {t('pageOf', { current: page + 1, total: totalPages })}
       </span>
       <Button
@@ -41,5 +41,5 @@ export function Pagination({ page, totalPages, onPageChange }: PaginationProps) 
         <ChevronRight className="h-4 w-4" />
       </Button>
     </div>
-  )
+  );
 }

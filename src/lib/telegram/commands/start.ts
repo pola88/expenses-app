@@ -1,17 +1,20 @@
-import { telegramLinkService } from '@/services/telegram-link.service'
-import { sendMessage } from '../client'
+import { telegramLinkService } from '@/services/telegram-link.service';
+import { sendMessage } from '../client';
 
 export async function handleStart(chatId: string, args: string) {
-  const code = args.split(/\s+/)[0]
+  const code = args.split(/\s+/)[0];
   if (!code) {
-    await sendMessage(chatId, 'Enviá /start seguido del código que generaste en Configuración > Telegram.')
-    return
+    await sendMessage(
+      chatId,
+      'Enviá /start seguido del código que generaste en Configuración > Telegram.'
+    );
+    return;
   }
 
-  const link = await telegramLinkService.consumeLinkCode(code, chatId)
+  const link = await telegramLinkService.consumeLinkCode(code, chatId);
   if (!link) {
-    await sendMessage(chatId, 'Código inválido o vencido. Generá uno nuevo desde la app.')
-    return
+    await sendMessage(chatId, 'Código inválido o vencido. Generá uno nuevo desde la app.');
+    return;
   }
 
   await sendMessage(
@@ -26,6 +29,6 @@ export async function handleStart(chatId: string, args: string) {
       '/resumen — resumen del mes',
       '/categorias — ver categorías',
       '/deshacer — borrar el último movimiento cargado',
-    ].join('\n'),
-  )
+    ].join('\n')
+  );
 }

@@ -1,33 +1,33 @@
-'use client'
+'use client';
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useTranslations } from 'next-intl'
-import { Send, RefreshCw } from 'lucide-react'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Button } from '@/components/ui/button'
-import { apiFetch } from '@/lib/fetch'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
+import { Send, RefreshCw } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { apiFetch } from '@/lib/fetch';
 
-type LinkStatus = { linked: boolean }
-type LinkCode = { code: string; deepLink: string | null; expiresInMinutes: number }
+type LinkStatus = { linked: boolean };
+type LinkCode = { code: string; deepLink: string | null; expiresInMinutes: number };
 
 export default function TelegramPage() {
-  const t = useTranslations('settings.telegram')
-  const queryClient = useQueryClient()
+  const t = useTranslations('settings.telegram');
+  const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery<LinkStatus>({
     queryKey: ['telegram-link'],
     queryFn: () => apiFetch<LinkStatus>('/api/telegram/link'),
-  })
+  });
 
   const mutation = useMutation({
     mutationFn: () => apiFetch<LinkCode>('/api/telegram/link', { method: 'POST' }),
-  })
+  });
 
-  const refresh = () => queryClient.invalidateQueries({ queryKey: ['telegram-link'] })
+  const refresh = () => queryClient.invalidateQueries({ queryKey: ['telegram-link'] });
 
   return (
-    <div className="p-4 md:p-6 flex flex-col gap-4 max-w-2xl mx-auto w-full">
-      <h1 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 p-4 md:p-6">
+      <h1 className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">
         {t('title')}
       </h1>
 
@@ -59,7 +59,7 @@ export default function TelegramPage() {
                   </a>
                 </Button>
               )}
-              <code className="truncate rounded-lg border border-border bg-muted px-3 py-2 text-xs font-mono">
+              <code className="truncate rounded-lg border border-border bg-muted px-3 py-2 font-mono text-xs">
                 /start {mutation.data.code}
               </code>
               <p className="text-xs text-muted-foreground">
@@ -71,12 +71,16 @@ export default function TelegramPage() {
               </Button>
             </div>
           ) : (
-            <Button onClick={() => mutation.mutate()} disabled={mutation.isPending} className="self-start">
+            <Button
+              onClick={() => mutation.mutate()}
+              disabled={mutation.isPending}
+              className="self-start"
+            >
               {mutation.isPending ? t('generating') : t('generateCode')}
             </Button>
           )}
         </div>
       )}
     </div>
-  )
+  );
 }

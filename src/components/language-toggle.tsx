@@ -1,11 +1,11 @@
-'use client'
+'use client';
 
-import { useLocale } from 'next-intl'
-import { setLocale } from '@/actions/locale'
-import { Button } from '@/components/ui/button'
+import { useLocale } from 'next-intl';
+import { setLocale } from '@/actions/locale';
+import { Button } from '@/components/ui/button';
 
 export function LanguageToggle() {
-  const locale = useLocale()
+  const locale = useLocale();
 
   return (
     <Button
@@ -16,5 +16,5 @@ export function LanguageToggle() {
     >
       {locale === 'es' ? 'EN' : 'ES'}
     </Button>
-  )
+  );
 }

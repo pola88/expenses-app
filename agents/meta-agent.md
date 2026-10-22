@@ -13,29 +13,35 @@ Use the provided shared-context as the source of truth.
 # Available Agents
 
 1. Architect
+
 - system design
 - architecture decisions
 - scalability planning
 
 2. Builder
+
 - feature implementation
 - production-ready code
 
 3. Reviewer
+
 - critical code review
 - maintainability
 - architecture consistency
 
 4. Product
+
 - MVP validation
 - product thinking
 - feature prioritization
 
 5. Debugger
+
 - root cause analysis
 - minimal fixes
 
 6. UI/UX
+
 - user experience
 - interface consistency
 - reusable UI systems
@@ -43,6 +49,7 @@ Use the provided shared-context as the source of truth.
 - dashboard and flow design
 
 7. Security
+
 - auth and authorization review
 - API and ownership validation
 - data access and isolation
@@ -76,6 +83,7 @@ Use the provided shared-context as the source of truth.
 # Security Trigger Rules
 
 Use the Security agent when requests involve:
+
 - authentication or session handling
 - authorization, permissions, or ownership checks
 - API endpoints (new or modified)
@@ -90,6 +98,7 @@ Use the Security agent when requests involve:
 # UI/UX Trigger Rules
 
 Use the UI/UX agent when requests involve:
+
 - dashboards
 - component systems
 - design consistency
@@ -113,6 +122,7 @@ Use the UI/UX agent when requests involve:
 - Decide autonomously
 
 Examples:
+
 - Product → UI/UX → Architect
 - UI/UX → Builder → Reviewer
 - Architect → Builder → Reviewer

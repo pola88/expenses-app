@@ -1,43 +1,43 @@
-'use client'
+'use client';
 
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { signIn } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-import Link from 'next/link'
-import { useTranslations } from 'next-intl'
-import { loginSchema, LoginInput } from '@/dtos/auth.dto'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { loginSchema, LoginInput } from '@/dtos/auth.dto';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export default function LoginPage() {
-  const t = useTranslations('auth.login')
-  const router = useRouter()
-  const [authError, setAuthError] = useState<string | null>(null)
+  const t = useTranslations('auth.login');
+  const router = useRouter();
+  const [authError, setAuthError] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<LoginInput>({ resolver: zodResolver(loginSchema) })
+  } = useForm<LoginInput>({ resolver: zodResolver(loginSchema) });
 
   const onSubmit = async (data: LoginInput) => {
-    setAuthError(null)
-    const result = await signIn('credentials', { ...data, redirect: false })
+    setAuthError(null);
+    const result = await signIn('credentials', { ...data, redirect: false });
     if (result?.error) {
-      setAuthError(t('invalidCredentials'))
-      return
+      setAuthError(t('invalidCredentials'));
+      return;
     }
-    router.push('/')
-    router.refresh()
-  }
+    router.push('/');
+    router.refresh();
+  };
 
   return (
     <div className="rounded-2xl border bg-background p-6 shadow-sm">
-      <h1 className="text-xl font-semibold mb-1">{t('title')}</h1>
-      <p className="text-sm text-muted-foreground mb-6">{t('subtitle')}</p>
+      <h1 className="mb-1 text-xl font-semibold">{t('title')}</h1>
+      <p className="mb-6 text-sm text-muted-foreground">{t('subtitle')}</p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <div className="flex flex-col gap-1.5">
@@ -70,17 +70,20 @@ export default function LoginPage() {
           </p>
         )}
 
-        <Button type="submit" disabled={isSubmitting} className="w-full mt-1">
+        <Button type="submit" disabled={isSubmitting} className="mt-1 w-full">
           {isSubmitting ? t('submitting') : t('submit')}
         </Button>
       </form>
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
         {t('noAccount')}{' '}
-        <Link href="/register" className="font-medium text-foreground underline-offset-4 hover:underline">
+        <Link
+          href="/register"
+          className="font-medium text-foreground underline-offset-4 hover:underline"
+        >
           {t('register')}
         </Link>
       </p>
     </div>
-  )
+  );
 }

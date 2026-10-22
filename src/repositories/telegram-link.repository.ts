@@ -1,15 +1,15 @@
-import { randomBytes } from 'crypto'
-import { prisma } from '@/lib/prisma'
+import { randomBytes } from 'crypto';
+import { prisma } from '@/lib/prisma';
 
-const LINK_CODE_TTL_MS = 10 * 60 * 1000
+const LINK_CODE_TTL_MS = 10 * 60 * 1000;
 
 export const telegramLinkRepository = {
   findByChatId(chatId: string) {
-    return prisma.telegramLink.findUnique({ where: { telegramChatId: chatId } })
+    return prisma.telegramLink.findUnique({ where: { telegramChatId: chatId } });
   },
 
   findByUserId(userId: string) {
-    return prisma.telegramLink.findUnique({ where: { userId } })
+    return prisma.telegramLink.findUnique({ where: { userId } });
   },
 
   upsertLink(userId: string, householdId: string, chatId: string) {
@@ -17,37 +17,37 @@ export const telegramLinkRepository = {
       where: { userId },
       create: { userId, householdId, telegramChatId: chatId },
       update: { telegramChatId: chatId },
-    })
+    });
   },
 
   setLastMovement(userId: string, type: 'expense' | 'income', id: string) {
     return prisma.telegramLink.update({
       where: { userId },
       data: { lastMovementType: type, lastMovementId: id },
-    })
+    });
   },
 
   clearLastMovement(userId: string) {
     return prisma.telegramLink.update({
       where: { userId },
       data: { lastMovementType: null, lastMovementId: null },
-    })
+    });
   },
 
   createLinkCode(userId: string) {
-    const code = randomBytes(16).toString('hex')
+    const code = randomBytes(16).toString('hex');
     return prisma.telegramLinkCode.create({
       data: { code, userId, expiresAt: new Date(Date.now() + LINK_CODE_TTL_MS) },
-    })
+    });
   },
 
   findValidCode(code: string) {
     return prisma.telegramLinkCode.findFirst({
       where: { code, expiresAt: { gt: new Date() } },
-    })
+    });
   },
 
   deleteCode(code: string) {
-    return prisma.telegramLinkCode.delete({ where: { code } }).catch(() => null)
+    return prisma.telegramLinkCode.delete({ where: { code } }).catch(() => null);
   },
-}
+};

@@ -1,19 +1,19 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { Copy, Check } from 'lucide-react'
-import { useTranslations } from 'next-intl'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Button } from '@/components/ui/button'
-import { apiFetch } from '@/lib/fetch'
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { Copy, Check } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { apiFetch } from '@/lib/fetch';
 
-type Member = { id: string; name: string | null; email: string | null; createdAt: string }
-type Household = { id: string; name: string; members: Member[] }
+type Member = { id: string; name: string | null; email: string | null; createdAt: string };
+type Household = { id: string; name: string; members: Member[] };
 
 function initials(name: string | null, email: string | null) {
-  const src = name ?? email ?? '?'
-  return src.slice(0, 2).toUpperCase()
+  const src = name ?? email ?? '?';
+  return src.slice(0, 2).toUpperCase();
 }
 
 const AVATAR_COLORS = [
@@ -23,41 +23,45 @@ const AVATAR_COLORS = [
   'bg-orange-100 text-orange-700',
   'bg-pink-100 text-pink-700',
   'bg-teal-100 text-teal-700',
-]
+];
 
 function avatarColor(id: string) {
-  const n = id.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0)
-  return AVATAR_COLORS[n % AVATAR_COLORS.length]
+  const n = id.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+  return AVATAR_COLORS[n % AVATAR_COLORS.length];
 }
 
 function CopyButton({ text }: { text: string }) {
-  const t = useTranslations('settings.household')
-  const [copied, setCopied] = useState(false)
+  const t = useTranslations('settings.household');
+  const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(text)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
+    await navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
-    <Button variant="outline" size="sm" onClick={handleCopy} className="gap-1.5 shrink-0">
-      {copied ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
+    <Button variant="outline" size="sm" onClick={handleCopy} className="shrink-0 gap-1.5">
+      {copied ? (
+        <Check className="h-3.5 w-3.5 text-emerald-600" />
+      ) : (
+        <Copy className="h-3.5 w-3.5" />
+      )}
       {copied ? t('copied') : t('copyId')}
     </Button>
-  )
+  );
 }
 
 export default function HouseholdPage() {
-  const t = useTranslations('settings.household')
+  const t = useTranslations('settings.household');
   const { data: household, isLoading } = useQuery<Household>({
     queryKey: ['household'],
     queryFn: () => apiFetch<Household>('/api/household'),
-  })
+  });
 
   return (
-    <div className="p-4 md:p-6 flex flex-col gap-4 max-w-2xl mx-auto w-full">
-      <h1 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 p-4 md:p-6">
+      <h1 className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">
         {t('title')}
       </h1>
 
@@ -70,13 +74,13 @@ export default function HouseholdPage() {
         <>
           <div className="flex flex-col gap-3 rounded-xl border border-border bg-background px-4 py-4">
             <div>
-              <p className="text-xs text-muted-foreground mb-0.5">{t('nameLabel')}</p>
+              <p className="mb-0.5 text-xs text-muted-foreground">{t('nameLabel')}</p>
               <p className="text-sm font-medium">{household.name}</p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground mb-1.5">{t('inviteId')}</p>
+              <p className="mb-1.5 text-xs text-muted-foreground">{t('inviteId')}</p>
               <div className="flex items-center gap-2">
-                <code className="flex-1 truncate rounded-lg border border-border bg-muted px-3 py-2 text-xs font-mono text-foreground">
+                <code className="flex-1 truncate rounded-lg border border-border bg-muted px-3 py-2 font-mono text-xs text-foreground">
                   {household.id}
                 </code>
                 <CopyButton text={household.id} />
@@ -85,10 +89,10 @@ export default function HouseholdPage() {
           </div>
 
           <div className="flex flex-col gap-1">
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground px-1 mb-1">
+            <p className="mb-1 px-1 text-xs font-semibold tracking-widest text-muted-foreground uppercase">
               {t('members', { count: household.members.length })}
             </p>
-            <div className="rounded-xl border border-border bg-background divide-y divide-border">
+            <div className="divide-y divide-border rounded-xl border border-border bg-background">
               {household.members.map((member) => (
                 <div key={member.id} className="flex items-center gap-3 px-4 py-3">
                   <div
@@ -111,5 +115,5 @@ export default function HouseholdPage() {
         </>
       )}
     </div>
-  )
+  );
 }

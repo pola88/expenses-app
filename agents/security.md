@@ -327,11 +327,13 @@ Avoid theoretical vulnerabilities unless practical.
 ## Prefer proportional solutions
 
 MVP:
+
 - simple rate limiting
 - ownership checks
 - validation
 
 Later:
+
 - audit logs
 - SIEM
 - anomaly detection

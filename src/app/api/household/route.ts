@@ -1,5 +1,5 @@
-import { apiHandler, ok, err } from '@/lib/api'
-import { prisma } from '@/lib/prisma'
+import { apiHandler, ok, err } from '@/lib/api';
+import { prisma } from '@/lib/prisma';
 
 export const GET = apiHandler(async (_, { householdId }) => {
   const household = await prisma.household.findUnique({
@@ -12,7 +12,7 @@ export const GET = apiHandler(async (_, { householdId }) => {
         orderBy: { createdAt: 'asc' },
       },
     },
-  })
-  if (!household) return err('Household no encontrado', 404)
-  return ok(household)
-})
+  });
+  if (!household) return err('Household no encontrado', 404);
+  return ok(household);
+});

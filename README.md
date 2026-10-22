@@ -15,15 +15,15 @@ Personal finance app for tracking expenses, incomes, and currency exchanges — 
 
 ## Stack
 
-| Layer | Technology |
-|---|---|
-| Framework | Next.js 15 App Router + TypeScript |
-| Database | PostgreSQL via Prisma |
-| Auth | NextAuth v5 — Credentials, JWT, PrismaAdapter |
-| Data fetching | TanStack Query |
-| Forms | React Hook Form + Zod |
-| UI | shadcn/ui + TailwindCSS |
-| Money arithmetic | decimal.js (no `number` for amounts, ever) |
+| Layer            | Technology                                    |
+| ---------------- | --------------------------------------------- |
+| Framework        | Next.js 15 App Router + TypeScript            |
+| Database         | PostgreSQL via Prisma                         |
+| Auth             | NextAuth v5 — Credentials, JWT, PrismaAdapter |
+| Data fetching    | TanStack Query                                |
+| Forms            | React Hook Form + Zod                         |
+| UI               | shadcn/ui + TailwindCSS                       |
+| Money arithmetic | decimal.js (no `number` for amounts, ever)    |
 
 ## Architecture
 

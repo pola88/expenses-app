@@ -1,9 +1,9 @@
-'use client'
+'use client';
 
-import { useTranslations } from 'next-intl'
-import type { Movement } from '@/types/movement'
-import { formatMoney, formatRate } from '@/lib/money'
-import { MovementActions } from './movement-actions'
+import { useTranslations } from 'next-intl';
+import type { Movement } from '@/types/movement';
+import { formatMoney, formatRate } from '@/lib/money';
+import { MovementActions } from './movement-actions';
 
 function Initials({ name }: { name: string | null }) {
   const letters = (name ?? '?')
@@ -11,28 +11,36 @@ function Initials({ name }: { name: string | null }) {
     .slice(0, 2)
     .map((w) => w[0])
     .join('')
-    .toUpperCase()
+    .toUpperCase();
   return (
     <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-muted text-[10px] font-semibold text-muted-foreground">
       {letters}
     </span>
-  )
+  );
 }
 
 function CurrencyBadge({ currency }: { currency: 'ARS' | 'USD' }) {
   return currency === 'USD' ? (
-    <span className="rounded px-1.5 py-0.5 text-[10px] font-medium bg-blue-50 text-blue-800">USD$</span>
+    <span className="rounded bg-blue-50 px-1.5 py-0.5 text-[10px] font-medium text-blue-800">
+      USD$
+    </span>
   ) : (
-    <span className="rounded px-1.5 py-0.5 text-[10px] font-medium bg-green-50 text-green-800">ARS$</span>
-  )
+    <span className="rounded bg-green-50 px-1.5 py-0.5 text-[10px] font-medium text-green-800">
+      ARS$
+    </span>
+  );
 }
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('es-AR', { day: 'numeric', month: 'short', timeZone: 'UTC' })
+  return new Date(iso).toLocaleDateString('es-AR', {
+    day: 'numeric',
+    month: 'short',
+    timeZone: 'UTC',
+  });
 }
 
 export function MovementItem({ movement }: { movement: Movement }) {
-  const t = useTranslations('dashboard.movement')
+  const t = useTranslations('dashboard.movement');
 
   if (movement.type === 'expense') {
     return (
@@ -40,14 +48,16 @@ export function MovementItem({ movement }: { movement: Movement }) {
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-lg">
           {movement.category.icon}
         </span>
-        <div className="flex flex-1 flex-col min-w-0">
-          <span className="text-sm font-medium truncate">{movement.description || movement.category.name}</span>
-          <div className="flex items-center gap-1.5 mt-0.5">
+        <div className="flex min-w-0 flex-1 flex-col">
+          <span className="truncate text-sm font-medium">
+            {movement.description || movement.category.name}
+          </span>
+          <div className="mt-0.5 flex items-center gap-1.5">
             <Initials name={movement.user.name} />
             <span className="text-xs text-muted-foreground">{formatDate(movement.date)}</span>
           </div>
         </div>
-        <div className="flex flex-col items-end gap-1 shrink-0">
+        <div className="flex shrink-0 flex-col items-end gap-1">
           <span className="text-sm font-semibold text-destructive tabular-nums">
             -{formatMoney(movement.amount, movement.currency).replace(/^(ARS|USD)\$ /, '')}
           </span>
@@ -55,7 +65,7 @@ export function MovementItem({ movement }: { movement: Movement }) {
         </div>
         <MovementActions movement={movement} />
       </div>
-    )
+    );
   }
 
   if (movement.type === 'income') {
@@ -64,17 +74,19 @@ export function MovementItem({ movement }: { movement: Movement }) {
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-green-50 text-lg">
           ↑
         </span>
-        <div className="flex flex-1 flex-col min-w-0">
-          <span className="text-sm font-medium truncate">{movement.description}</span>
-          <div className="flex items-center gap-1.5 mt-0.5">
+        <div className="flex min-w-0 flex-1 flex-col">
+          <span className="truncate text-sm font-medium">{movement.description}</span>
+          <div className="mt-0.5 flex items-center gap-1.5">
             <Initials name={movement.user.name} />
             <span className="text-xs text-muted-foreground">{formatDate(movement.date)}</span>
             {movement.isRecurring && (
-              <span className="text-[10px] text-muted-foreground border rounded px-1 py-0.5">{t('recurring')}</span>
+              <span className="rounded border px-1 py-0.5 text-[10px] text-muted-foreground">
+                {t('recurring')}
+              </span>
             )}
           </div>
         </div>
-        <div className="flex flex-col items-end gap-1 shrink-0">
+        <div className="flex shrink-0 flex-col items-end gap-1">
           <span className="text-sm font-semibold text-green-700 tabular-nums">
             +{formatMoney(movement.amount, movement.currency).replace(/^(ARS|USD)\$ /, '')}
           </span>
@@ -82,25 +94,26 @@ export function MovementItem({ movement }: { movement: Movement }) {
         </div>
         <MovementActions movement={movement} />
       </div>
-    )
+    );
   }
 
-  const hasCommission = parseFloat(movement.commissionValue) > 0
+  const hasCommission = parseFloat(movement.commissionValue) > 0;
   const commissionLabel = hasCommission
     ? movement.commissionType === 'pct'
       ? ` · ${formatRate(movement.commissionValue)}%`
       : ` · ${formatMoney(movement.commissionValue, movement.toCurrency)}`
-    : null
+    : null;
   return (
     <div className="group flex items-center gap-3 py-3">
       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-lg">
         ⇄
       </span>
-      <div className="flex flex-1 flex-col min-w-0">
+      <div className="flex min-w-0 flex-1 flex-col">
         <span className="text-sm font-medium">
-          {formatMoney(movement.fromAmount, movement.fromCurrency)} → {formatMoney(movement.toAmount, movement.toCurrency)}
+          {formatMoney(movement.fromAmount, movement.fromCurrency)} →{' '}
+          {formatMoney(movement.toAmount, movement.toCurrency)}
         </span>
-        <div className="flex items-center gap-1.5 mt-0.5">
+        <div className="mt-0.5 flex items-center gap-1.5">
           <Initials name={movement.user.name} />
           <span className="text-xs text-muted-foreground">
             {formatDate(movement.date)} · $1 = {formatRate(movement.exchangeRate)}
@@ -110,5 +123,5 @@ export function MovementItem({ movement }: { movement: Movement }) {
       </div>
       <MovementActions movement={movement} />
     </div>
-  )
+  );
 }

@@ -8,6 +8,7 @@ Antes de responder cualquier consulta no trivial, actuá como el Meta Agent
 definido en `/agents/meta-agent.md`.
 
 El Meta Agent orquesta los demás agentes según el tipo de request:
+
 - decisiones de producto → Product
 - diseño de UI/UX → UI/UX
 - arquitectura → Architect

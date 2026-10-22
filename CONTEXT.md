@@ -9,6 +9,7 @@ App de finanzas personales compartida para manejar gastos, ingresos y cambios de
 ## Decisiones tomadas
 
 ### Producto
+
 - Multi-ingreso: recurrente (con día del mes) y variable (único)
 - Monedas: ARS y USD. Siempre separadas, nunca consolidadas en una sola
 - Tipo de cambio: **manual** al registrar cada operación
@@ -17,6 +18,7 @@ App de finanzas personales compartida para manejar gastos, ingresos y cambios de
 - Categorías: por household, no globales
 
 ### Tech stack
+
 - Next.js App Router + TypeScript
 - Prisma + PostgreSQL
 - NextAuth v5 (Credentials, JWT strategy, PrismaAdapter)
@@ -29,6 +31,7 @@ App de finanzas personales compartida para manejar gastos, ingresos y cambios de
 - decimal.js (aritmética monetaria — nunca usar `number` para plata)
 
 ### Arquitectura
+
 - Patrón: Repository → Service → API Route → Client
 - Repositories: solo queries Prisma, sin lógica
 - Services: lógica de negocio, validan ownership antes de update/delete
@@ -259,7 +262,6 @@ Los ingresos recurrentes usan un modelo de **template + instancias**:
 
 1. Bot de Telegram
 2. API pública para n8n
-
 
 ## Variables de entorno necesarias
 

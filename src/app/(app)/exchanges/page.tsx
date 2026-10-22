@@ -1,20 +1,20 @@
-'use client'
+'use client';
 
-import { useQuery } from '@tanstack/react-query'
-import { useState, useMemo } from 'react'
-import { useTranslations } from 'next-intl'
-import Decimal from 'decimal.js'
-import type { MovementExchange } from '@/types/movement'
-import { apiFetch } from '@/lib/fetch'
-import { MovementItem } from '@/components/dashboard/movement-item'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Pagination } from '@/components/ui/pagination'
-import { PAGE_SIZE } from '@/lib/constants'
-import { formatAmount } from '@/lib/money'
+import { useQuery } from '@tanstack/react-query';
+import { useState, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
+import Decimal from 'decimal.js';
+import type { MovementExchange } from '@/types/movement';
+import { apiFetch } from '@/lib/fetch';
+import { MovementItem } from '@/components/dashboard/movement-item';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Pagination } from '@/components/ui/pagination';
+import { PAGE_SIZE } from '@/lib/constants';
+import { formatAmount } from '@/lib/money';
 
 export default function CambiosPage() {
-  const t = useTranslations('exchanges')
-  const [page, setPage] = useState(0)
+  const t = useTranslations('exchanges');
+  const [page, setPage] = useState(0);
 
   const { data: exchanges = [], isLoading } = useQuery<MovementExchange[]>({
     queryKey: ['exchanges'],
@@ -22,31 +22,31 @@ export default function CambiosPage() {
       apiFetch<MovementExchange[]>('/api/exchanges').then((items) =>
         items.map((x) => ({ ...x, type: 'exchange' as const }))
       ),
-  })
+  });
 
   const sorted = useMemo(
     () => [...exchanges].sort((a, b) => b.date.localeCompare(a.date)),
-    [exchanges],
-  )
+    [exchanges]
+  );
 
   const totals = useMemo(() => {
     const sum = (currency: 'ARS' | 'USD') =>
       exchanges
         .reduce((acc, x) => {
-          if (x.fromCurrency === currency) acc = acc.plus(x.fromAmount)
-          if (x.toCurrency === currency) acc = acc.plus(x.toAmount)
-          return acc
+          if (x.fromCurrency === currency) acc = acc.plus(x.fromAmount);
+          if (x.toCurrency === currency) acc = acc.plus(x.toAmount);
+          return acc;
         }, new Decimal(0))
-        .toFixed(2)
-    return { ARS: sum('ARS'), USD: sum('USD') }
-  }, [exchanges])
+        .toFixed(2);
+    return { ARS: sum('ARS'), USD: sum('USD') };
+  }, [exchanges]);
 
-  const totalPages = Math.ceil(sorted.length / PAGE_SIZE)
-  const paginated = sorted.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)
+  const totalPages = Math.ceil(sorted.length / PAGE_SIZE);
+  const paginated = sorted.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
 
   return (
-    <div className="p-4 md:p-6 flex flex-col gap-4 max-w-2xl mx-auto w-full">
-      <h1 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 p-4 md:p-6">
+      <h1 className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">
         {t('title')}
       </h1>
 
@@ -54,11 +54,15 @@ export default function CambiosPage() {
         <div className="grid grid-cols-2 gap-3">
           <div className="rounded-xl border border-blue-100 bg-blue-50 p-4">
             <span className="text-xs font-semibold tracking-wide text-blue-600">USD$</span>
-            <p className="mt-1 text-xl font-bold tabular-nums text-blue-900">{formatAmount(totals.USD)}</p>
+            <p className="mt-1 text-xl font-bold text-blue-900 tabular-nums">
+              {formatAmount(totals.USD)}
+            </p>
           </div>
           <div className="rounded-xl border border-green-100 bg-green-50 p-4">
             <span className="text-xs font-semibold tracking-wide text-green-600">ARS$</span>
-            <p className="mt-1 text-xl font-bold tabular-nums text-green-900">{formatAmount(totals.ARS)}</p>
+            <p className="mt-1 text-xl font-bold text-green-900 tabular-nums">
+              {formatAmount(totals.ARS)}
+            </p>
           </div>
         </div>
       )}
@@ -72,11 +76,11 @@ export default function CambiosPage() {
       ) : sorted.length === 0 ? (
         <div className="rounded-xl border bg-background py-12 text-center">
           <p className="text-sm text-muted-foreground">{t('empty')}</p>
-          <p className="text-xs text-muted-foreground mt-1">{t('emptyCta')}</p>
+          <p className="mt-1 text-xs text-muted-foreground">{t('emptyCta')}</p>
         </div>
       ) : (
         <>
-          <div className="rounded-xl border bg-background divide-y divide-border px-4">
+          <div className="divide-y divide-border rounded-xl border bg-background px-4">
             {paginated.map((exchange) => (
               <MovementItem key={exchange.id} movement={exchange} />
             ))}
@@ -86,5 +90,5 @@ export default function CambiosPage() {
         </>
       )}
     </div>
-  )
+  );
 }
