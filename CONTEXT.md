@@ -253,6 +253,10 @@ Los ingresos recurrentes usan un modelo de **template + instancias**:
 - **Template**: `Income` con `isRecurring: true` y `recurringDay`. Actúa como configuración. Se puede pausar (`recurringActive: false`) o reanudar.
 - **Instancia**: `Income` con `isRecurring: false` y `recurringSourceId` apuntando al template. Es el ingreso real del mes.
 - **Auto-sync**: `incomeService.syncRecurringIncomes(householdId)` crea la instancia del mes actual si no existe. Se llama automáticamente al consultar la wallet. No requiere confirmación manual del usuario.
+- **Punto de entrada único**: `ensureRecurringSynced(householdId)` (`services/recurring.service.ts`). Lo llaman `getWalletBalance` / `getWalletSummary` (así Telegram también queda sincronizado) y el layout de `(app)`.
+- **Idempotencia**: cada instancia guarda `recurringPeriod` (`"YYYY-MM"`) con `@@unique([recurringSourceId, recurringPeriod])` y se crea con `createMany({ skipDuplicates: true })`. Requests concurrentes no duplican instancias.
+- **Query keys**: todas las de wallet salen de `walletKeys` (`lib/query-keys.ts`) y cuelgan de `['wallet']`. Invalidar con `walletKeys.all`.
+- **Tests**: Vitest (`npm test`), archivos `src/**/*.test.ts`.
 
 ---
 

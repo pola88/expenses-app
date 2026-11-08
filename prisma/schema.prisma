@@ -110,6 +110,8 @@ model Income {
   recurringDay      Int?
   recurringActive   Boolean  @default(true)
   recurringSourceId String?
+  /// Mes de la instancia recurrente ("YYYY-MM"). Junto con recurringSourceId evita duplicados.
+  recurringPeriod   String?
   createdAt         DateTime @default(now())
 
   householdId String
@@ -120,6 +122,7 @@ model Income {
   recurringSource    Income?  @relation("RecurringInstances", fields: [recurringSourceId], references: [id], onDelete: SetNull)
   recurringInstances Income[] @relation("RecurringInstances")
 
+  @@unique([recurringSourceId, recurringPeriod])
   @@index([householdId, date])
   @@index([householdId, isRecurring])
   @@index([recurringSourceId])
@@ -135,6 +138,8 @@ model Expense {
   recurringDay      Int?
   recurringActive   Boolean  @default(true)
   recurringSourceId String?
+  /// Mes de la instancia recurrente ("YYYY-MM"). Junto con recurringSourceId evita duplicados.
+  recurringPeriod   String?
   createdAt         DateTime @default(now())
 
   householdId String
@@ -147,27 +152,28 @@ model Expense {
   recurringSource    Expense?  @relation("RecurringExpenseInstances", fields: [recurringSourceId], references: [id], onDelete: SetNull)
   recurringInstances Expense[] @relation("RecurringExpenseInstances")
 
+  @@unique([recurringSourceId, recurringPeriod])
   @@index([householdId, date])
   @@index([householdId, isRecurring])
   @@index([recurringSourceId])
 }
 
 model CurrencyExchange {
-  id            String   @id @default(cuid())
-  fromCurrency  Currency
-  toCurrency    Currency
-  fromAmount    Decimal  @db.Decimal(18, 2)
-  toAmount      Decimal  @db.Decimal(18, 2)
-  exchangeRate  Decimal  @db.Decimal(10, 4)
+  id              String   @id @default(cuid())
+  fromCurrency    Currency
+  toCurrency      Currency
+  fromAmount      Decimal  @db.Decimal(18, 2)
+  toAmount        Decimal  @db.Decimal(18, 2)
+  exchangeRate    Decimal  @db.Decimal(10, 4)
   commissionType  String   @default("pct")
   commissionValue Decimal  @default(0) @db.Decimal(18, 4)
-  date          DateTime
-  createdAt     DateTime @default(now())
+  date            DateTime
+  createdAt       DateTime @default(now())
 
   householdId String
-  household   Household        @relation(fields: [householdId], references: [id])
+  household   Household @relation(fields: [householdId], references: [id])
   userId      String
-  user        User             @relation(fields: [userId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
 
   @@index([householdId, date])
 }

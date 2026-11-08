@@ -18,6 +18,7 @@ import {
 import type { ExpenseTemplate } from '@/types/movement';
 import { formatMoney } from '@/lib/money';
 import { apiFetch } from '@/lib/fetch';
+import { walletKeys } from '@/lib/query-keys';
 
 type Props = { template: ExpenseTemplate; onEdit: (t: ExpenseTemplate) => void };
 
@@ -38,7 +39,7 @@ export function RecurringExpenseTemplateItem({ template, onEdit }: Props) {
     mutationFn: () => patch(false),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['expenses', 'templates'] });
-      qc.invalidateQueries({ queryKey: ['wallet'] });
+      qc.invalidateQueries({ queryKey: walletKeys.all });
       toast.success(t('stoppedToast'));
       setStopOpen(false);
     },
@@ -49,7 +50,7 @@ export function RecurringExpenseTemplateItem({ template, onEdit }: Props) {
     mutationFn: () => patch(true),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['expenses', 'templates'] });
-      qc.invalidateQueries({ queryKey: ['wallet'] });
+      qc.invalidateQueries({ queryKey: walletKeys.all });
       toast.success(t('resumedToast'));
     },
     onError: (err: Error) => toast.error(err.message),

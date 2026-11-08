@@ -1,7 +1,7 @@
 import { expenseRepository, ExpenseFilters } from '@/repositories/expense.repository';
 import { categoryRepository } from '@/repositories/category.repository';
 import { CreateExpenseInput, UpdateExpenseInput } from '@/dtos/expense.dto';
-import { daysInMonth } from '@/lib/date';
+import { planRecurringInstances } from '@/lib/recurring';
 import { NotFoundError } from '@/lib/errors';
 
 export const expenseService = {
@@ -69,24 +69,21 @@ export const expenseService = {
     );
     const existingIds = new Set(existing.map((i) => i.recurringSourceId));
 
-    const missing = templates.filter((t) => !existingIds.has(t.id));
-    if (missing.length === 0) return;
+    const planned = planRecurringInstances(templates, existingIds, year, month);
+    if (planned.length === 0) return;
 
-    await Promise.all(
-      missing.map((template) => {
-        const day = Math.min(template.recurringDay!, daysInMonth(year, month));
-        return expenseRepository.create({
-          amount: template.amount.toString(),
-          currency: template.currency,
-          description: template.description,
-          categoryId: template.categoryId,
-          date: new Date(Date.UTC(year, month, day)),
-          isRecurring: false,
-          householdId,
-          userId: template.userId,
-          recurringSourceId: template.id,
-        });
-      })
+    await expenseRepository.createRecurringInstances(
+      planned.map(({ template, date, period }) => ({
+        amount: template.amount.toString(),
+        currency: template.currency,
+        description: template.description,
+        categoryId: template.categoryId,
+        date,
+        householdId,
+        userId: template.userId,
+        recurringSourceId: template.id,
+        recurringPeriod: period,
+      }))
     );
   },
 };

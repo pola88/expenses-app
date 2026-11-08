@@ -1,6 +1,6 @@
 import { incomeRepository } from '@/repositories/income.repository';
 import { CreateIncomeInput, UpdateIncomeInput } from '@/dtos/income.dto';
-import { daysInMonth } from '@/lib/date';
+import { planRecurringInstances } from '@/lib/recurring';
 import { NotFoundError } from '@/lib/errors';
 
 export const incomeService = {
@@ -57,23 +57,20 @@ export const incomeService = {
     );
     const existingIds = new Set(existing.map((i) => i.recurringSourceId));
 
-    const missing = templates.filter((t) => !existingIds.has(t.id));
-    if (missing.length === 0) return;
+    const planned = planRecurringInstances(templates, existingIds, year, month);
+    if (planned.length === 0) return;
 
-    await Promise.all(
-      missing.map((template) => {
-        const day = Math.min(template.recurringDay!, daysInMonth(year, month));
-        return incomeRepository.create({
-          amount: template.amount.toString(),
-          currency: template.currency,
-          description: template.description,
-          date: new Date(Date.UTC(year, month, day)),
-          isRecurring: false,
-          householdId,
-          userId: template.userId,
-          recurringSourceId: template.id,
-        });
-      })
+    await incomeRepository.createRecurringInstances(
+      planned.map(({ template, date, period }) => ({
+        amount: template.amount.toString(),
+        currency: template.currency,
+        description: template.description,
+        date,
+        householdId,
+        userId: template.userId,
+        recurringSourceId: template.id,
+        recurringPeriod: period,
+      }))
     );
   },
 };

@@ -25,6 +25,7 @@ import { parseMonthParam, monthBounds } from '@/lib/month';
 import { toast } from 'sonner';
 import { PAGE_SIZE } from '@/lib/constants';
 import { formatAmount } from '@/lib/money';
+import { walletKeys } from '@/lib/query-keys';
 
 type FilterType = 'all' | 'expense' | 'income' | 'exchange';
 type FilterCurrency = 'all' | 'ARS' | 'USD';
@@ -161,7 +162,7 @@ export default function MovimientosPage() {
     setEditTemplate(null);
     qc.invalidateQueries({ queryKey: ['expenses', 'templates'] });
     qc.invalidateQueries({ queryKey: ['expenses', from] });
-    qc.invalidateQueries({ queryKey: ['wallet'] });
+    qc.invalidateQueries({ queryKey: walletKeys.all });
     toast.success(tExp('recurringUpdated'));
   };
 

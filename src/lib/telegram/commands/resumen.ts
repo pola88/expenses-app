@@ -1,10 +1,13 @@
 import { TelegramLink } from '@prisma/client';
 import { getWalletSummary, getCategoryBreakdown } from '@/services/wallet.service';
 import { formatMoney } from '@/lib/money';
+import { ensureRecurringSynced } from '@/services/recurring.service';
 import { sendMessage } from '../client';
 
 export async function handleResumen(link: TelegramLink) {
   const now = new Date();
+  // El breakdown corre en paralelo al summary, así que sincronizamos antes para que ambos vean lo mismo.
+  await ensureRecurringSynced(link.householdId);
   const [summary, breakdown] = await Promise.all([
     getWalletSummary(link.householdId, now),
     getCategoryBreakdown(link.householdId, now),

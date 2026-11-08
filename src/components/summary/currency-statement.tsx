@@ -8,24 +8,33 @@ import type { WalletSummary } from '@/services/wallet.service';
 import { apiFetch } from '@/lib/fetch';
 import { useSearchParams } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
+import { walletKeys } from '@/lib/query-keys';
 
 type Currency = 'USD' | 'ARS';
 
 type CurrencyStatementProps = {
   currency: Currency;
   householdId: string;
+  /** Summary ya calculado en el server para el mes seleccionado. */
+  initialData?: WalletSummary;
 };
 
-export const CurrencyStatement = ({ currency, householdId }: CurrencyStatementProps) => {
+export const CurrencyStatement = ({
+  currency,
+  householdId,
+  initialData,
+}: CurrencyStatementProps) => {
   const searchParams = useSearchParams();
   const month = searchParams.get('month') ?? undefined;
 
   const { data, isLoading } = useQuery<WalletSummary>({
-    queryKey: ['wallet-month', householdId, month],
+    queryKey: walletKeys.month(householdId, month),
     queryFn: () => {
       const url = month ? `/api/wallet?month=${month}` : '/api/wallet';
       return apiFetch<WalletSummary>(url);
     },
+    initialData,
+    staleTime: 30_000,
   });
 
   const t = useTranslations('dashboard.monthSummary');

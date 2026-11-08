@@ -28,6 +28,7 @@ import { ExpenseForm } from '@/components/quick-add/expense-form';
 import { IncomeForm } from '@/components/quick-add/income-form';
 import type { Movement } from '@/types/movement';
 import { apiFetch } from '@/lib/fetch';
+import { walletKeys } from '@/lib/query-keys';
 
 type Props = { movement: Movement };
 
@@ -90,7 +91,7 @@ export function MovementActions({ movement }: Props) {
   }, []);
 
   const invalidate = () => {
-    qc.invalidateQueries({ queryKey: ['wallet'] });
+    qc.invalidateQueries({ queryKey: walletKeys.all });
     qc.invalidateQueries({ queryKey: ['expenses'] });
     qc.invalidateQueries({ queryKey: ['incomes'] });
     qc.invalidateQueries({ queryKey: ['exchanges'] });

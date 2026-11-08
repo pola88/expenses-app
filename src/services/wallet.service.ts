@@ -4,6 +4,7 @@ import { incomeRepository } from '@/repositories/income.repository';
 import { expenseRepository } from '@/repositories/expense.repository';
 import { exchangeRepository } from '@/repositories/exchange.repository';
 import type { Movement } from '@/types/movement';
+import { ensureRecurringSynced } from '@/services/recurring.service';
 
 export type WalletBalance = { ARS: string; USD: string };
 
@@ -19,7 +20,13 @@ export type WalletSummary = {
 
 export type { Movement };
 
+/** Saldo actual por moneda. Sincroniza recurrentes antes de calcular. */
 export async function getWalletBalance(householdId: string): Promise<WalletBalance> {
+  await ensureRecurringSynced(householdId);
+  return computeBalance(householdId);
+}
+
+async function computeBalance(householdId: string): Promise<WalletBalance> {
   const [incomeSums, expenseSums, exchangeFromSums, exchangeToSums] = await Promise.all([
     prisma.income.groupBy({
       by: ['currency'],
@@ -79,8 +86,11 @@ export async function getWalletSummary(householdId: string, month: Date): Promis
   const from = new Date(Date.UTC(y, mo, 1));
   const to = new Date(Date.UTC(y, mo + 1, 0, 23, 59, 59, 999));
 
+  // Sincronizar antes de leer: si no, las queries en paralelo pueden no ver las instancias nuevas.
+  await ensureRecurringSynced(householdId);
+
   const [balance, monthIncomes, monthExpenses, monthExchanges] = await Promise.all([
-    getWalletBalance(householdId),
+    computeBalance(householdId),
     incomeRepository.findByHousehold(householdId, { from, to }),
     expenseRepository.findByHousehold(householdId, { from, to }),
     exchangeRepository.findByHousehold(householdId, { from, to }),

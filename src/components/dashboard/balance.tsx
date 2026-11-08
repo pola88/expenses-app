@@ -6,13 +6,14 @@ import type { WalletSummary } from '@/services/wallet.service';
 import { apiFetch } from '@/lib/fetch';
 import { CurrencyStatement } from '../summary/currency-statement';
 import { MoneyValue } from '../money-value';
+import { walletKeys } from '@/lib/query-keys';
 
 type Currency = 'USD' | 'ARS';
 type Props = { currency: Currency; householdId: string; initialData: WalletSummary };
 
 export function BalanceCard({ currency, householdId, initialData }: Props) {
   const { data, isLoading } = useQuery<WalletSummary>({
-    queryKey: ['wallet', householdId],
+    queryKey: walletKeys.balance(householdId),
     queryFn: () => apiFetch<WalletSummary>('/api/wallet'),
     initialData,
     staleTime: 30_000,
@@ -37,7 +38,7 @@ export function BalanceCard({ currency, householdId, initialData }: Props) {
           {currency}
         </span>
       </div>
-      <CurrencyStatement currency={currency} householdId={householdId} />
+      <CurrencyStatement currency={currency} householdId={householdId} initialData={initialData} />
     </div>
   );
 }

@@ -12,6 +12,7 @@ import { IncomeForm } from './income-form';
 import { ExchangeForm } from './exchange-form';
 import { toast } from 'sonner';
 import { useQuickAdd } from './quick-add-provider';
+import { walletKeys } from '@/lib/query-keys';
 
 function QuickAddTabs({ onSuccess }: { onSuccess: (label: string) => void }) {
   const t = useTranslations('quickAdd');
@@ -62,7 +63,7 @@ export function QuickAddSheet() {
   const handleSuccess = (label: string) => {
     setOpen(false);
     toast.success(label);
-    qc.invalidateQueries({ queryKey: ['wallet'] });
+    qc.invalidateQueries({ queryKey: walletKeys.all });
     qc.invalidateQueries({ queryKey: ['expenses'] });
     qc.invalidateQueries({ queryKey: ['incomes'] });
     qc.invalidateQueries({ queryKey: ['exchanges'] });

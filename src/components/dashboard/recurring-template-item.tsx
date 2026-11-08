@@ -18,6 +18,7 @@ import {
 import type { IncomeTemplate } from '@/types/movement';
 import { formatMoney } from '@/lib/money';
 import { apiFetch } from '@/lib/fetch';
+import { walletKeys } from '@/lib/query-keys';
 
 type Props = { template: IncomeTemplate; onEdit: (t: IncomeTemplate) => void };
 
@@ -31,7 +32,7 @@ export function RecurringTemplateItem({ template, onEdit }: Props) {
     mutationFn: () => apiFetch(`/api/incomes/${template.id}/stop`, { method: 'POST' }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['incomes', 'templates'] });
-      qc.invalidateQueries({ queryKey: ['wallet'] });
+      qc.invalidateQueries({ queryKey: walletKeys.all });
       toast.success(t('stoppedToast'));
     },
     onError: (err: Error) => toast.error(err.message),
@@ -46,7 +47,7 @@ export function RecurringTemplateItem({ template, onEdit }: Props) {
       }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['incomes', 'templates'] });
-      qc.invalidateQueries({ queryKey: ['wallet'] });
+      qc.invalidateQueries({ queryKey: walletKeys.all });
       toast.success(t('resumedToast'));
     },
     onError: (err: Error) => toast.error(err.message),

@@ -15,6 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Skeleton } from '@/components/ui/skeleton';
 
 import { formatAmount } from '@/lib/money';
+import { walletKeys } from '@/lib/query-keys';
 
 type Filter = 'all' | 'variable' | 'recurring';
 
@@ -75,7 +76,7 @@ export default function IngresosPage() {
     setEditTemplate(null);
     qc.invalidateQueries({ queryKey: ['incomes', 'templates'] });
     qc.invalidateQueries({ queryKey: ['incomes'] });
-    qc.invalidateQueries({ queryKey: ['wallet'] });
+    qc.invalidateQueries({ queryKey: walletKeys.all });
     toast.success(t('recurringUpdated'));
   };
 
