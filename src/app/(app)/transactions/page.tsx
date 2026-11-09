@@ -1,53 +1,29 @@
 'use client';
 
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useState, useMemo, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
-import Decimal from 'decimal.js';
-import type {
-  Movement,
-  MovementExpense,
-  MovementIncome,
-  MovementExchange,
-  ExpenseTemplate,
-} from '@/types/movement';
-import { apiFetch } from '@/lib/fetch';
+
 import { MovementList } from '@/components/dashboard/movement-list';
-import { RecurringExpenseTemplateItem } from '@/components/dashboard/recurring-expense-template-item';
-import { ExpenseForm } from '@/components/quick-add/expense-form';
 import { Skeleton } from '@/components/ui/skeleton';
 import { MonthNavigator } from '@/components/ui/month-navigator';
 import { Pagination } from '@/components/ui/pagination';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+
 import { parseMonthParam, monthBounds } from '@/lib/month';
-import { toast } from 'sonner';
 import { PAGE_SIZE } from '@/lib/constants';
-import { formatAmount } from '@/lib/money';
-import { walletKeys } from '@/lib/query-keys';
 
-type FilterType = 'all' | 'expense' | 'income' | 'exchange';
-type FilterCurrency = 'all' | 'ARS' | 'USD';
+import { MyToggle } from '@/components/toggle';
+import { useGetExchanges, useGetExpenses, useGetIncomes } from '@/actions/api-calls';
+import { useTransactions } from '@/lib/hooks/useTransactions';
+import type { FilterType, FilterCurrency } from '@/types/transaction-page';
+import { Totals } from '@/components/transactions/totals';
+import { ExpenseTemplateList } from '@/components/transactions/expense-template';
 
-export default function MovimientosPage() {
+export default function TransactionsPage() {
   const t = useTranslations('movements');
-  const tExp = useTranslations('expenses');
-  const qc = useQueryClient();
   const [type, setType] = useState<FilterType>('all');
   const [currency, setCurrency] = useState<FilterCurrency>('all');
   const [page, setPage] = useState(0);
-  const [editTemplate, setEditTemplate] = useState<ExpenseTemplate | null>(null);
-  const [isDesktop, setIsDesktop] = useState(
-    () => typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches
-  );
-
-  useEffect(() => {
-    const mq = window.matchMedia('(min-width: 768px)');
-    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
-  }, []);
 
   const searchParams = useSearchParams();
   const selectedMonth = parseMonthParam(searchParams.get('month'));
@@ -55,78 +31,18 @@ export default function MovimientosPage() {
   const from = fromDate.toISOString();
   const to = toDate.toISOString();
 
-  const { data: expenses = [], isLoading: loadingE } = useQuery<MovementExpense[]>({
-    queryKey: ['expenses', from],
-    queryFn: () =>
-      apiFetch<MovementExpense[]>(`/api/expenses?from=${from}&to=${to}`).then((items) =>
-        items.map((e) => ({ ...e, type: 'expense' as const }))
-      ),
-  });
-
-  const { data: incomes = [], isLoading: loadingI } = useQuery<MovementIncome[]>({
-    queryKey: ['incomes', from],
-    queryFn: () =>
-      apiFetch<MovementIncome[]>(`/api/incomes?from=${from}&to=${to}`).then((items) =>
-        items.map((i) => ({ ...i, type: 'income' as const }))
-      ),
-  });
-
-  const { data: exchanges = [], isLoading: loadingX } = useQuery<MovementExchange[]>({
-    queryKey: ['exchanges', from],
-    queryFn: () =>
-      apiFetch<MovementExchange[]>(`/api/exchanges?from=${from}&to=${to}`).then((items) =>
-        items.map((x) => ({ ...x, type: 'exchange' as const }))
-      ),
-  });
-
-  const { data: templates = [], isLoading: loadingTemplates } = useQuery<ExpenseTemplate[]>({
-    queryKey: ['expenses', 'templates'],
-    queryFn: () => apiFetch<ExpenseTemplate[]>('/api/expenses?templates=true'),
-  });
+  const { expenses, isLoading: loadingE } = useGetExpenses(from, to);
+  const { incomes, isLoading: loadingI } = useGetIncomes(from, to);
+  const { exchanges, isLoading: loadingX } = useGetExchanges(from, to);
 
   const isLoading = loadingE || loadingI || loadingX;
-
-  const movements = useMemo<Movement[]>(() => {
-    let all: Movement[] = [...expenses, ...incomes, ...exchanges];
-
-    if (type !== 'all') {
-      all = all.filter((m) => m.type === type);
-    }
-
-    if (currency !== 'all') {
-      all = all.filter((m) => {
-        if (m.type === 'exchange') return m.fromCurrency === currency || m.toCurrency === currency;
-        return m.currency === currency;
-      });
-    }
-
-    return all.sort((a, b) => b.date.localeCompare(a.date));
-  }, [expenses, incomes, exchanges, type, currency]);
-
-  const totals = useMemo(() => {
-    if (type === 'all') return null;
-    if (type === 'expense' || type === 'income') {
-      const items = movements.filter(
-        (m): m is MovementExpense | MovementIncome => m.type !== 'exchange'
-      );
-      const sum = (cur: 'ARS' | 'USD') =>
-        items
-          .filter((m) => m.currency === cur)
-          .reduce((acc, m) => acc.plus(m.amount), new Decimal(0))
-          .toFixed(2);
-      return { ARS: sum('ARS'), USD: sum('USD') };
-    }
-    const items = movements.filter((m): m is MovementExchange => m.type === 'exchange');
-    const sum = (cur: 'ARS' | 'USD') =>
-      items
-        .reduce((acc, x) => {
-          if (x.fromCurrency === cur) acc = acc.plus(x.fromAmount);
-          if (x.toCurrency === cur) acc = acc.plus(x.toAmount);
-          return acc;
-        }, new Decimal(0))
-        .toFixed(2);
-    return { ARS: sum('ARS'), USD: sum('USD') };
-  }, [movements, type]);
+  const { movements, currencyFilters, typeFilters } = useTransactions({
+    currency,
+    type,
+    expenses,
+    incomes,
+    exchanges,
+  });
 
   const totalPages = Math.ceil(movements.length / PAGE_SIZE);
   const paginated = movements.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
@@ -140,116 +56,34 @@ export default function MovimientosPage() {
     setPage(0);
   };
 
-  const chip = (active: boolean) =>
-    `rounded-full px-3 py-1 text-sm font-medium transition-colors ${
-      active ? 'bg-foreground text-background' : 'text-muted-foreground hover:text-foreground'
-    }`;
-
-  const typeFilters: { value: FilterType; label: string }[] = [
-    { value: 'all', label: t('all') },
-    { value: 'expense', label: t('expense') },
-    { value: 'income', label: t('income') },
-    { value: 'exchange', label: t('exchange') },
-  ];
-
-  const currencyFilters: { value: FilterCurrency; label: string }[] = [
-    { value: 'all', label: t('allCurrencies') },
-    { value: 'ARS', label: 'ARS$' },
-    { value: 'USD', label: 'USD$' },
-  ];
-
-  const handleEditSuccess = () => {
-    setEditTemplate(null);
-    qc.invalidateQueries({ queryKey: ['expenses', 'templates'] });
-    qc.invalidateQueries({ queryKey: ['expenses', from] });
-    qc.invalidateQueries({ queryKey: walletKeys.all });
-    toast.success(tExp('recurringUpdated'));
-  };
-
-  const editForm = editTemplate ? (
-    <ExpenseForm
-      editId={editTemplate.id}
-      initialValues={{
-        amount: editTemplate.amount,
-        currency: editTemplate.currency,
-        description: editTemplate.description,
-        date: editTemplate.date.split('T')[0],
-        categoryId: editTemplate.categoryId,
-        isRecurring: true,
-        recurringDay: editTemplate.recurringDay,
-      }}
-      onSuccess={handleEditSuccess}
-    />
-  ) : null;
-
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 p-4 md:p-6">
+    <div className="flex w-full flex-col gap-6 p-4 md:p-6">
       <h1 className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">
         {t('title')}
       </h1>
 
       <MonthNavigator />
 
-      <div className="flex flex-col gap-1.5">
+      <div className="flex gap-1.5">
         <div className="flex gap-1">
-          {typeFilters.map(({ value, label }) => (
-            <button
-              key={value}
-              type="button"
-              onClick={() => setTypeAndReset(value)}
-              className={chip(type === value)}
-            >
-              {label}
-            </button>
-          ))}
+          <MyToggle
+            currentValue={type}
+            items={typeFilters}
+            onChange={(value) => setTypeAndReset(value as FilterType)}
+          />
         </div>
         <div className="flex gap-1">
-          {currencyFilters.map(({ value, label }) => (
-            <button
-              key={value}
-              type="button"
-              onClick={() => setCurrencyAndReset(value)}
-              className={chip(currency === value)}
-            >
-              {label}
-            </button>
-          ))}
+          <MyToggle
+            currentValue={currency}
+            items={currencyFilters}
+            onChange={(value) => setCurrencyAndReset(value as FilterCurrency)}
+          />
         </div>
       </div>
 
-      {totals && (
-        <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-xl border border-blue-100 bg-blue-50 p-4">
-            <span className="text-xs font-semibold tracking-wide text-blue-600">USD$</span>
-            <p className="mt-1 text-xl font-bold text-blue-900 tabular-nums">
-              {formatAmount(totals.USD)}
-            </p>
-          </div>
-          <div className="rounded-xl border border-green-100 bg-green-50 p-4">
-            <span className="text-xs font-semibold tracking-wide text-green-600">ARS$</span>
-            <p className="mt-1 text-xl font-bold text-green-900 tabular-nums">
-              {formatAmount(totals.ARS)}
-            </p>
-          </div>
-        </div>
-      )}
+      <Totals type={type} movements={movements} />
 
-      {type === 'expense' && !loadingTemplates && templates.length > 0 && (
-        <div className="flex flex-col gap-1">
-          <h2 className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">
-            {tExp('recurringConfigured')}
-          </h2>
-          <div className="divide-y divide-border rounded-xl border bg-background px-4">
-            {templates.map((tmpl) => (
-              <RecurringExpenseTemplateItem
-                key={tmpl.id}
-                template={tmpl}
-                onEdit={setEditTemplate}
-              />
-            ))}
-          </div>
-        </div>
-      )}
+      {type === 'expense' && <ExpenseTemplateList />}
 
       {isLoading ? (
         <div className="flex flex-col gap-2">
@@ -262,27 +96,6 @@ export default function MovimientosPage() {
           <MovementList movements={paginated} />
           <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
         </>
-      )}
-
-      {isDesktop ? (
-        <Dialog open={!!editTemplate} onOpenChange={(v) => !v && setEditTemplate(null)}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{tExp('editRecurring')}</DialogTitle>
-            </DialogHeader>
-            {editForm}
-          </DialogContent>
-        </Dialog>
-      ) : (
-        <Sheet open={!!editTemplate} onOpenChange={(v) => !v && setEditTemplate(null)}>
-          <SheetContent side="bottom" className="rounded-t-2xl px-4 pt-4 pb-8">
-            <SheetHeader className="mb-4">
-              <div className="mx-auto mb-3 h-1 w-9 rounded-full bg-muted" />
-              <SheetTitle>{tExp('editRecurring')}</SheetTitle>
-            </SheetHeader>
-            {editForm}
-          </SheetContent>
-        </Sheet>
       )}
     </div>
   );
