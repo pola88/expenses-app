@@ -2,6 +2,7 @@ import { formatAmount } from '@/lib/money';
 import { useTotals } from '@/lib/hooks/useTotals';
 import type { Movement } from '@/types/movement';
 import type { FilterType } from '@/types/transaction-page';
+import { MoneyValue } from '@/components/money-value';
 
 type TotalsProps = {
   movements: Movement[];
@@ -15,18 +16,26 @@ export const Totals = ({ movements, type }: TotalsProps) => {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-3">
-      <div className="rounded-xl border border-blue-100 bg-blue-50 p-4">
-        <span className="text-xs font-semibold tracking-wide text-blue-600">USD$</span>
-        <p className="mt-1 text-xl font-bold text-blue-900 tabular-nums">
-          {formatAmount(totals.USD)}
-        </p>
+    <div className="flex flex-col divide-y rounded-xl border bg-card lg:flex-row lg:divide-x lg:divide-y-0">
+      <div className="flex flex-1 flex-col gap-2 divide-y divide-dotted p-4">
+        <div className="flex items-start pb-2">
+          <p className="mt-1.5 flex-1 text-3xl font-bold tabular-nums lg:text-4xl">
+            <MoneyValue value={totals.USD} />
+          </p>
+          <span className="rounded border px-1.5 py-0.5 font-mono text-xs font-medium tracking-wide">
+            USD
+          </span>
+        </div>
       </div>
-      <div className="rounded-xl border border-green-100 bg-green-50 p-4">
-        <span className="text-xs font-semibold tracking-wide text-green-600">ARS$</span>
-        <p className="mt-1 text-xl font-bold text-green-900 tabular-nums">
-          {formatAmount(totals.ARS)}
-        </p>
+      <div className="flex flex-1 flex-col gap-2 divide-y divide-dotted p-4">
+        <div className="flex items-start pb-2">
+          <p className="mt-1.5 flex-1 text-3xl font-bold tabular-nums lg:text-4xl">
+            <MoneyValue value={totals.ARS} />
+          </p>
+          <span className="rounded border px-1.5 py-0.5 font-mono text-xs font-medium tracking-wide">
+            ARS
+          </span>
+        </div>
       </div>
     </div>
   );
