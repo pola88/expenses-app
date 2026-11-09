@@ -1,127 +1,18 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
 import type { Movement } from '@/types/movement';
-import { formatMoney, formatRate } from '@/lib/money';
-import { MovementActions } from './movement-actions';
-
-export function Initials({ name }: { name: string | null }) {
-  const letters = (name ?? '?')
-    .split(' ')
-    .slice(0, 2)
-    .map((w) => w[0])
-    .join('')
-    .toUpperCase();
-  return (
-    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-muted text-[10px] font-semibold text-muted-foreground">
-      {letters}
-    </span>
-  );
-}
-
-export function CurrencyBadge({ currency }: { currency: 'ARS' | 'USD' }) {
-  return currency === 'USD' ? (
-    <span className="rounded bg-blue-50 px-1.5 py-0.5 text-[10px] font-medium text-blue-800">
-      USD$
-    </span>
-  ) : (
-    <span className="rounded bg-green-50 px-1.5 py-0.5 text-[10px] font-medium text-green-800">
-      ARS$
-    </span>
-  );
-}
-
-export function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('es-AR', {
-    day: 'numeric',
-    month: 'short',
-    timeZone: 'UTC',
-  });
-}
+import { ItemExpense } from './item/expense';
+import { ItemIncome } from './item/income';
+import { ItemExchange } from './item/exchange';
 
 export function MovementItem({ movement }: { movement: Movement }) {
-  const t = useTranslations('dashboard.movement');
-
   if (movement.type === 'expense') {
-    return (
-      <div className="group flex items-center gap-3 py-3">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-lg">
-          {movement.category.icon}
-        </span>
-        <div className="flex min-w-0 flex-1 flex-col">
-          <span className="truncate text-sm font-medium">
-            {movement.description || movement.category.name}
-          </span>
-          <div className="mt-0.5 flex items-center gap-1.5">
-            <Initials name={movement.user.name} />
-            <span className="text-xs text-muted-foreground">{formatDate(movement.date)}</span>
-          </div>
-        </div>
-        <div className="flex shrink-0 flex-col items-end gap-1">
-          <span className="text-sm font-semibold text-destructive tabular-nums">
-            -{formatMoney(movement.amount, movement.currency).replace(/^(ARS|USD)\$ /, '')}
-          </span>
-          <CurrencyBadge currency={movement.currency} />
-        </div>
-        <MovementActions movement={movement} />
-      </div>
-    );
+    return <ItemExpense movement={movement} />;
   }
 
   if (movement.type === 'income') {
-    return (
-      <div className="group flex items-center gap-3 py-3">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-green-50 text-lg">
-          ↑
-        </span>
-        <div className="flex min-w-0 flex-1 flex-col">
-          <span className="truncate text-sm font-medium">{movement.description}</span>
-          <div className="mt-0.5 flex items-center gap-1.5">
-            <Initials name={movement.user.name} />
-            <span className="text-xs text-muted-foreground">{formatDate(movement.date)}</span>
-            {movement.isRecurring && (
-              <span className="rounded border px-1 py-0.5 text-[10px] text-muted-foreground">
-                {t('recurring')}
-              </span>
-            )}
-          </div>
-        </div>
-        <div className="flex shrink-0 flex-col items-end gap-1">
-          <span className="text-sm font-semibold text-green-700 tabular-nums">
-            +{formatMoney(movement.amount, movement.currency).replace(/^(ARS|USD)\$ /, '')}
-          </span>
-          <CurrencyBadge currency={movement.currency} />
-        </div>
-        <MovementActions movement={movement} />
-      </div>
-    );
+    return <ItemIncome movement={movement} />;
   }
 
-  const hasCommission = parseFloat(movement.commissionValue) > 0;
-  const commissionLabel = hasCommission
-    ? movement.commissionType === 'pct'
-      ? ` · ${formatRate(movement.commissionValue)}%`
-      : ` · ${formatMoney(movement.commissionValue, movement.toCurrency)}`
-    : null;
-  return (
-    <div className="group flex items-center gap-3 py-3">
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-lg">
-        ⇄
-      </span>
-      <div className="flex min-w-0 flex-1 flex-col">
-        <span className="text-sm font-medium">
-          {formatMoney(movement.fromAmount, movement.fromCurrency)} →{' '}
-          {formatMoney(movement.toAmount, movement.toCurrency)}
-        </span>
-        <div className="mt-0.5 flex items-center gap-1.5">
-          <Initials name={movement.user.name} />
-          <span className="text-xs text-muted-foreground">
-            {formatDate(movement.date)} · $1 = {formatRate(movement.exchangeRate)}
-            {commissionLabel}
-          </span>
-        </div>
-      </div>
-      <MovementActions movement={movement} />
-    </div>
-  );
+  return <ItemExchange movement={movement} />;
 }
