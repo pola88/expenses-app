@@ -1,45 +1,55 @@
 'use client';
 
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface PaginationProps {
   page: number;
-  totalPages: number;
+  pageSize: number;
+  totalItems: number;
   onPageChange: (page: number) => void;
+  className?: string;
 }
 
-export function Pagination({ page, totalPages, onPageChange }: PaginationProps) {
+export function Pagination({
+  page,
+  pageSize,
+  totalItems,
+  onPageChange,
+  className,
+}: PaginationProps) {
   const t = useTranslations('common');
 
-  if (totalPages <= 1) return null;
+  if (totalItems === 0) return null;
+
+  const totalPages = Math.ceil(totalItems / pageSize);
+  const from = page * pageSize + 1;
+  const to = Math.min((page + 1) * pageSize, totalItems);
 
   return (
-    <div className="flex items-center justify-between">
-      <Button
-        variant="ghost"
-        size="icon"
-        className="h-10 w-10"
-        disabled={page === 0}
-        onClick={() => onPageChange(page - 1)}
-        aria-label={t('prev')}
-      >
-        <ChevronLeft className="h-4 w-4" />
-      </Button>
-      <span className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">
-        {t('pageOf', { current: page + 1, total: totalPages })}
+    <div className={cn('flex items-center justify-between gap-4', className)}>
+      <span className="text-sm text-muted-foreground tabular-nums">
+        {t('range', { from, to, total: totalItems })}
       </span>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="h-10 w-10"
-        disabled={page >= totalPages - 1}
-        onClick={() => onPageChange(page + 1)}
-        aria-label={t('next')}
-      >
-        <ChevronRight className="h-4 w-4" />
-      </Button>
+      <div className="flex gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={page === 0}
+          onClick={() => onPageChange(page - 1)}
+        >
+          {t('prev')}
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={page >= totalPages - 1}
+          onClick={() => onPageChange(page + 1)}
+        >
+          {t('next')}
+        </Button>
+      </div>
     </div>
   );
 }

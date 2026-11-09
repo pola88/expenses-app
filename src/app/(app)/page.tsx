@@ -2,7 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import { requireHousehold } from '@/lib/session';
 import { getWalletSummary, getRecentMovements } from '@/services/wallet.service';
 import { BalanceCard } from '@/components/dashboard/balance';
-import { MovementList } from '@/components/dashboard/movement-list';
+import { MovementList } from '@/components/movement/movement-list';
 import { ExpensesByCategory } from '@/components/dashboard/expenses-by-category';
 import { MonthlyEvolution } from '@/components/dashboard/monthly-evolution';
 import { MonthNavigator } from '@/components/ui/month-navigator';

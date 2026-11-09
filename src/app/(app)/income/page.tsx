@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import Decimal from 'decimal.js';
 import type { MovementIncome, IncomeTemplate } from '@/types/movement';
 import { apiFetch } from '@/lib/fetch';
-import { MovementItem } from '@/components/dashboard/movement-item';
+import { MovementItem } from '@/components/movement/movement-item';
 import { RecurringTemplateItem } from '@/components/dashboard/recurring-template-item';
 import { IncomeForm } from '@/components/quick-add/income-form';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';

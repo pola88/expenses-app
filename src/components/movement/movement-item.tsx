@@ -5,7 +5,7 @@ import type { Movement } from '@/types/movement';
 import { formatMoney, formatRate } from '@/lib/money';
 import { MovementActions } from './movement-actions';
 
-function Initials({ name }: { name: string | null }) {
+export function Initials({ name }: { name: string | null }) {
   const letters = (name ?? '?')
     .split(' ')
     .slice(0, 2)
@@ -19,7 +19,7 @@ function Initials({ name }: { name: string | null }) {
   );
 }
 
-function CurrencyBadge({ currency }: { currency: 'ARS' | 'USD' }) {
+export function CurrencyBadge({ currency }: { currency: 'ARS' | 'USD' }) {
   return currency === 'USD' ? (
     <span className="rounded bg-blue-50 px-1.5 py-0.5 text-[10px] font-medium text-blue-800">
       USD$
@@ -31,7 +31,7 @@ function CurrencyBadge({ currency }: { currency: 'ARS' | 'USD' }) {
   );
 }
 
-function formatDate(iso: string) {
+export function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('es-AR', {
     day: 'numeric',
     month: 'short',

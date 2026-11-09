@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 
-import { MovementList } from '@/components/dashboard/movement-list';
+import { MovementList } from '@/components/movement/movement-list';
 import { Skeleton } from '@/components/ui/skeleton';
 import { MonthNavigator } from '@/components/ui/month-navigator';
 import { Pagination } from '@/components/ui/pagination';
@@ -44,7 +44,6 @@ export default function TransactionsPage() {
     exchanges,
   });
 
-  const totalPages = Math.ceil(movements.length / PAGE_SIZE);
   const paginated = movements.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
 
   const setTypeAndReset = (value: FilterType) => {
@@ -92,10 +91,17 @@ export default function TransactionsPage() {
           ))}
         </div>
       ) : (
-        <>
-          <MovementList movements={paginated} />
-          <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
-        </>
+        <MovementList
+          movements={paginated}
+          footer={
+            <Pagination
+              page={page}
+              pageSize={PAGE_SIZE}
+              totalItems={movements.length}
+              onPageChange={setPage}
+            />
+          }
+        />
       )}
     </div>
   );

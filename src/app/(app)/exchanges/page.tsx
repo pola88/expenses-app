@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import Decimal from 'decimal.js';
 import type { MovementExchange } from '@/types/movement';
 import { apiFetch } from '@/lib/fetch';
-import { MovementItem } from '@/components/dashboard/movement-item';
+import { MovementItem } from '@/components/movement/movement-item';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Pagination } from '@/components/ui/pagination';
 import { PAGE_SIZE } from '@/lib/constants';
@@ -41,7 +41,6 @@ export default function CambiosPage() {
     return { ARS: sum('ARS'), USD: sum('USD') };
   }, [exchanges]);
 
-  const totalPages = Math.ceil(sorted.length / PAGE_SIZE);
   const paginated = sorted.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
 
   return (
@@ -86,7 +85,12 @@ export default function CambiosPage() {
             ))}
           </div>
 
-          <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+          <Pagination
+            page={page}
+            pageSize={PAGE_SIZE}
+            totalItems={sorted.length}
+            onPageChange={setPage}
+          />
         </>
       )}
     </div>

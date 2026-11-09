@@ -13,7 +13,7 @@
     "actions": "Actions",
     "prev": "Previous",
     "next": "Next",
-    "pageOf": "{current} of {total}"
+    "range": "{from}–{to} of {total}"
   },
   "nav": {
     "home": "Home",
@@ -113,7 +113,12 @@
       "registered": "{description} registered",
       "error": "Could not register income"
     },
-    "add": "Add movement"
+    "add": "Add movement",
+    "table": {
+      "movement": "Movement",
+      "date": "Date",
+      "amount": "Amount"
+    }
   },
   "wallet": {
     "title": "Wallet"

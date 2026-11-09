@@ -13,7 +13,7 @@
     "actions": "Acciones",
     "prev": "Anterior",
     "next": "Siguiente",
-    "pageOf": "{current} de {total}"
+    "range": "{from}–{to} de {total}"
   },
   "nav": {
     "home": "Inicio",
@@ -113,7 +113,12 @@
       "registered": "{description} registrado",
       "error": "No se pudo registrar el ingreso"
     },
-    "add": "Agregar movimiento"
+    "add": "Agregar movimiento",
+    "table": {
+      "movement": "Movimiento",
+      "date": "Fecha",
+      "amount": "Monto"
+    }
   },
   "wallet": {
     "title": "Wallet"
